@@ -2,7 +2,7 @@
 define(function(require) {
     'use strict';
 
-    //@TODO: add touch events
+    var searchFormSubmitted, trackEnqueueClicked, sliderActivated, playToggled, playNext, skip;
 
     var Controller = require('modules/controller'),
         Events = require('modules/events'),
@@ -20,7 +20,7 @@ define(function(require) {
         observe();
     }
 
-    function searchFormSubmitted(e) {
+    searchFormSubmitted = function(e) {
         //Let's just handle everything JS side
         e.preventDefault();
 
@@ -32,40 +32,49 @@ define(function(require) {
         if(searchTerms && searchTerms.length > 1) {
             Controller.search(searchTerms);
         }
-    }
+    };
 
-    function trackEnqueueClicked(e) {
+    trackEnqueueClicked = function(e) {
         e.preventDefault();
         var target = $(this);
+        if(target.hasClass('disabled')) {
+            return;
+        }
         target.addClass('disabled');
+        target.parent().addClass('selected');
         Queue.enqueue(target.parent().data('track'));
-    }
+        return false;
+    };
 
-    function sliderActivated(e) {
+    sliderActivated = function(e) {
         e.preventDefault();
         $('.slider').toggleClass('slide');
-    }
+        return false;
+    };
 
-    function playToggled(e) {
+    playToggled = function(e) {
         e.preventDefault();
         playNext();
-    }
+        return false;
+    };
 
-    function playNext() {
+    playNext = function() {
         var track = Queue.get(0);
         if(track) {
             Controller.prepare(track.id);
             console.log(track);
         }
-    }
+        return false;
+    };
 
-    function skip(e) {
+    skip = function(e) {
         e.preventDefault();
         Controller.stop();
         $('.player .playlist li').first().remove();
         Queue.shift();
         playNext();
-    }
+        return false;
+    };
 
     function observe(){
         dispatcher.on(Events.SEARCH_RESULTS, function(results){
@@ -107,6 +116,7 @@ define(function(require) {
             Controller.play();
         });
         dispatcher.on(Events.TRACK_FINISHED, function(){
+            console.log('AHAH')
             $('.player .playlist li').first().remove();
             Queue.shift();
             playNext();

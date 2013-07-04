@@ -51,7 +51,7 @@ h1 {
     font-size: 4.8rem;
     text-transform: uppercase;
     text-align: center;
-    color: #ff7f50;
+    color: #ccc;
 }
 
 h2 {
@@ -94,10 +94,10 @@ form {
 
 .slide-control {
     display: block;
-    width: 3rem;
-    height: 3rem;
+    width: 4.4rem;
+    height: 4.4rem;
     position: absolute;
-    top: 5px;
+    top: -4px;
     font-size: 3rem;
     line-height: 3rem;
     text-decoration: none;
@@ -108,14 +108,16 @@ form {
 
 .search .slide-control {
     right: 0;
+    background: #ccc url(../img/controls.png) no-repeat 0 -17.6rem;
 }
 
 .player h2 {
-    padding-left: 3.1rem;
+    padding-left: 3.5rem;
 }
 
 .player .slide-control {
     left: 0;
+    background: #ccc url(../img/controls.png) no-repeat 0 -13.2rem;
 }
 
 .search input {
@@ -143,6 +145,15 @@ form {
     position: relative;
     height: 100px;
     padding: 0 .5rem;
+    -webkit-transition: opacity .3s 0 linear;
+    -moz-transition: opacity .3s 0 linear;
+    -o-transition: opacity .3s 0 linear;
+    -ms-transition: opacity .3s 0 linear;
+    transition: opacity .3s 0 linear;
+}
+
+.track-list li.selected {
+    opacity: 0.5;
 }
 
 .track-list h4 {
@@ -162,7 +173,7 @@ form {
 
 .track-list h5 span {
     font-weight: bold;
-    color: #ff7f50;
+    color: #ccc;
 }
 
 .track-list img {
@@ -193,7 +204,7 @@ form {
 
 .controls a {
     margin: 1rem .5rem;
-    background: #fff;
+    background: #fff url(../img/controls.png) no-repeat 0 0;
     border: .2rem solid #111;
     color: #111;
     display: inline-block;
@@ -204,4 +215,16 @@ form {
     height: 4.4rem;
     font-size: 3rem;
     line-height: 4.4rem;
+}
+
+.controls a.play {
+    background-position: 0 0rem;
+}
+
+.controls a.pause {
+    background-position: 0 -8.8rem;
+}
+
+.controls a.skip {
+    background-position: 0 -4.4rem;
 }
