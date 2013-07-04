@@ -1,0 +1,18 @@
+{
+  "name": "soundcloud-player",
+  "version": "0.0.0",
+  "description": "A simple, mobile friendly player for Soundcloud tracks",
+  "main": "app.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": "",
+  "author": "Massimiliano Marcon",
+  "license": "MIT",
+  "dependencies": {
+    "docco": "0.6.2"
+  }
+}
