@@ -57,6 +57,13 @@
             </section>
         </div>
     </div>
+    <div class="ios-prompt">
+        <p>
+            For a better experience and to enable continuos playing
+            add Cloudplayer to the <strong>Home Screen</strong>.
+        </p>
+        <span class="icon"></span>
+    </div>
 </body>
 
 <script type="text/html" id="searchResult">
@@ -69,5 +76,20 @@
     <h4><%=title%></h4>
     <h5>by <span><%=user.username%></span></h5>
     <img src="<%=artwork_url%>">
+</script>
+<script>
+    //For iOS we want to show a notification
+    //to ask users to add the app to home screen
+    //for a better experience.
+    //Add the right classes to body so we can
+    //show/hide the prompt via CSS.
+    var bodyClass = '';
+    if('standalone' in window.navigator){
+        bodyClass += 'ios'
+        if(window.navigator.standalone){
+            bodyClass += ' standalone';
+        }
+    }
+    document.querySelector('body').className = bodyClass;
 </script>
 </html>

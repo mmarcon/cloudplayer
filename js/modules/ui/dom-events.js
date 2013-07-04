@@ -2,6 +2,8 @@
 define(function(require) {
     'use strict';
 
+    //@TODO: add touch events
+
     var DOM = require('modules/ui/dom'),
         Controller = require('modules/controller'),
         Events = require('modules/events'),
