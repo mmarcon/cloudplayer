@@ -1,7 +1,17 @@
 /*global define, document, Element*/
 define(function() {
     'use strict';
-    var $ = document.querySelectorAll.bind(document);
+
+    //jQuery selector kind of approach.
+    //If no elements are found a fake element is created and returned
+    //so on still works and doesn't break tests.
+    var $ = function(selector){
+        var results = document.querySelectorAll(selector);
+        if(results.length === 0) {
+            [].push.call(results, document.createElement('div'));
+        }
+        return results;
+    };
 
     //I want to support jQuery-style event binding
     //
