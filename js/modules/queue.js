@@ -17,6 +17,10 @@ define(function(require){
         return (index < queue.length && queue[index]);
     }
 
+    function shift() {
+        return queue.shift();
+    }
+
     function length() {
         return queue.length;
     }
@@ -24,6 +28,7 @@ define(function(require){
     return {
         enqueue: enqueue,
         length: length,
-        get: get
+        get: get,
+        shift: shift
     };
 });

@@ -33,6 +33,8 @@ define(function(){
             };
         })(),
         SEARCH_RESULTS: 'searchresults',
-        QUEUE_CHANGED: 'queuechanged'
+        QUEUE_CHANGED: 'queuechanged',
+        TRACK_READY: 'trackready',
+        TRACK_FINISHED: 'trackfinished'
     };
 });

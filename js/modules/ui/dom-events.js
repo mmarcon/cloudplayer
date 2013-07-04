@@ -16,6 +16,7 @@ define(function(require) {
         $('.search .results').on('touchstart click', '.enqueue', trackEnqueueClicked);
         $('.slide-control').on('touchstart click', sliderActivated);
         $('.toggleplay').on('touchstart click', playToggled);
+        $('.skip').on('touchstart click', skip);
         observe();
     }
 
@@ -35,7 +36,9 @@ define(function(require) {
 
     function trackEnqueueClicked(e) {
         e.preventDefault();
-        Queue.enqueue($(this).parent().data('track'));
+        var target = $(this);
+        target.addClass('disabled');
+        Queue.enqueue(target.parent().data('track'));
     }
 
     function sliderActivated(e) {
@@ -45,9 +48,23 @@ define(function(require) {
 
     function playToggled(e) {
         e.preventDefault();
+        playNext();
+    }
+
+    function playNext() {
         var track = Queue.get(0);
-        console.log(track);
-        Controller.play(track.id);
+        if(track) {
+            Controller.prepare(track.id);
+            console.log(track);
+        }
+    }
+
+    function skip(e) {
+        e.preventDefault();
+        Controller.stop();
+        $('.player .playlist li').first().remove();
+        Queue.shift();
+        playNext();
     }
 
     function observe(){
@@ -85,6 +102,14 @@ define(function(require) {
                 li.html(Template.parse('playlistItem', item));
                 playlist.append(li);
             });
+        });
+        dispatcher.on(Events.TRACK_READY, function(){
+            Controller.play();
+        });
+        dispatcher.on(Events.TRACK_FINISHED, function(){
+            $('.player .playlist li').first().remove();
+            Queue.shift();
+            playNext();
         });
     }
 

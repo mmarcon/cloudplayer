@@ -8,18 +8,29 @@ define(function(require) {
     'use strict';
 
     var Search = require('modules/search'),
-        Player = require('modules/player');
+        Player = require('modules/player'),
+        player = Player.getPlayer();
 
     function search(searchTerm) {
         Search.search(searchTerm);
     }
 
-    function play(trackId) {
-        Player.play(trackId);
+    function prepare(trackId) {
+        player.prepare(trackId);
+    }
+
+    function play() {
+        player.play();
+    }
+
+    function stop() {
+        player.stop();
     }
 
     return {
         search: search,
-        play: play
+        prepare: prepare,
+        play: play,
+        stop: stop
     };
 });
