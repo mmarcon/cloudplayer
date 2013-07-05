@@ -50,7 +50,7 @@
                     <a href="#search" class="slide-control"></a>
                     <h2>Playlist</h2>
                 </header>
-                <div class="controls">
+                <div class="controls dashboard">
                     <a href="#toggleplay" class="toggleplay play"></a>
                     <a href="#skip" class="skip"></a>
                 </div>
@@ -74,9 +74,17 @@
     <a class="enqueue" href="#enqueue" title="Add to playlist" data-id="<%=id%>">+</a>
 </script>
 <script type="text/html" id="playlistItem">
-    <h4><%=title%></h4>
-    <h5>by <span><%=user.username%></span></h5>
-    <img src="<%=artwork_url%>">
+    <div class="item">
+        <h4><%=title%></h4>
+        <h5>by <span><%=user.username%></span></h5>
+        <img src="<%=artwork_url%>">
+        <div class="controls more"><a href="#more"></a></div>
+    </div>
+    <div class="controls reorder">
+        <a href="#down" class="move down"></a>
+        <a href="#up" class="move up"></a>
+        <a href="#delete" class="move delete"></a>
+    </div>
 </script>
 <script>
     //For iOS we want to show a notification

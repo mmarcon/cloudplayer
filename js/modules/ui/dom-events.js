@@ -2,7 +2,7 @@
 define(function(require) {
     'use strict';
 
-    var searchFormSubmitted, trackEnqueueClicked, sliderActivated, playToggled, playNext, skip;
+    var searchFormSubmitted, trackEnqueueClicked, sliderActivated, playToggled, playNext, skip, showMoreClicked;
 
     var Controller = require('modules/controller'),
         Events = require('modules/events'),
@@ -15,6 +15,7 @@ define(function(require) {
         $('.search form').on('submit', searchFormSubmitted);
         $('.search .results').on('touchstart click', '.enqueue', trackEnqueueClicked);
         $('.slide-control').on('touchstart click', sliderActivated);
+        $('.playlist').on('touchstart click', '.more a', showMoreClicked);
         $('.toggleplay').on('touchstart click', playToggled);
         $('.skip').on('touchstart click', skip);
         observe();
@@ -50,6 +51,11 @@ define(function(require) {
         e.preventDefault();
         $('.slider').toggleClass('slide');
         return false;
+    };
+
+    showMoreClicked = function(e) {
+        e.preventDefault();
+        $(this).parents('.item').toggleClass('translated');
     };
 
     playToggled = function(e) {
