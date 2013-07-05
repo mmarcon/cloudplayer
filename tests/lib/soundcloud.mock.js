@@ -1,5 +1,6 @@
 /*global jasmine*/
 window.SC = {
     initialize: jasmine.createSpy('Soundcloud SDK::initialize'),
-    get: function(){}
+    get: function(){},
+    stream: function(){}
 };
