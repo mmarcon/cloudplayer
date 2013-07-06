@@ -115,6 +115,7 @@
 
     Player = <span class="keyword">function</span>(){
         <span class="keyword">this</span>.currentTrack = <span class="literal">null</span>;
+        <span class="keyword">this</span>.playing = <span class="literal">false</span>;
     };
 
     P = Player.prototype;</pre></div></div>
@@ -158,20 +159,35 @@ At this point the track can be played with <code>play</code>.</p>
                     eventDispatcher.trigger(Events.TRACK_FINISHED);
                 }
             });
+            <span class="keyword">this</span>.playing = <span class="literal">true</span>;
+            eventDispatcher.trigger(Events.TRACK_PLAYING);
         }
     };
 
     P.pause = <span class="keyword">function</span>() {
-        <span class="keyword">this</span>.currentTrack.pause();
+        <span class="keyword">if</span>(<span class="keyword">this</span>.currentTrack) {
+            <span class="keyword">this</span>.currentTrack.pause();
+            eventDispatcher.trigger(Events.TRACK_PAUSED);
+        }
     };
 
     P.resume = <span class="keyword">function</span>() {
-        <span class="keyword">this</span>.currentTrack.resume();
+        <span class="keyword">if</span>(<span class="keyword">this</span>.currentTrack) {
+            <span class="keyword">this</span>.currentTrack.resume();
+            eventDispatcher.trigger(Events.TRACK_PLAYING);
+        }
     };
 
     P.stop = <span class="keyword">function</span>() {
-        <span class="keyword">this</span>.currentTrack.stop();
-        <span class="keyword">this</span>.currentTrack = <span class="literal">null</span>;
+        <span class="keyword">if</span>(<span class="keyword">this</span>.currentTrack) {
+            <span class="keyword">this</span>.currentTrack.stop();
+            <span class="keyword">this</span>.playing = <span class="literal">false</span>;
+            <span class="keyword">this</span>.currentTrack = <span class="literal">null</span>;
+        }
+    };
+
+    P.isPlaying = <span class="keyword">function</span>(){
+        <span class="keyword">return</span> <span class="keyword">this</span>.playing;
     };
 
     <span class="keyword">return</span> {

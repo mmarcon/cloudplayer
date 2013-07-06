@@ -11,16 +11,16 @@ define(function(require) {
         showMoreClicked,
         reorderOrDeleteClicked;
 
-    var toggleplay = $('.toggleplay'),
-        playlist = $('.playlist'),
-        searchResultsList = $('.search .results');
-
     var Controller = require('modules/controller'),
         Events = require('modules/events'),
         Queue = require('modules/queue'),
         Template = require('modules/ui/template'),
         $ = require('jquery'),
         dispatcher = Events.getDispatcher();
+
+    var toggleplay = $('.toggleplay'),
+        playlist = $('.playlist'),
+        searchResultsList = $('.search .results');
 
     function bind(){
         $('.search form').on('submit', searchFormSubmitted);

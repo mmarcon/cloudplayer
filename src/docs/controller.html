@@ -132,11 +132,42 @@ invokes other services, e.g. Soundcould&#39;s search.</p>
         player.stop();
     }
 
+    <span class="function"><span class="keyword">function</span> <span class="title">pause</span><span class="params">()</span> {</span>
+        player.pause();
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Attempts to resume a track. If the player was not
+playing a track then returns false so other components
+can act accordingly.</p>
+<p>This solution isn&#39;t ideal and should be refactored.
+However, since it&#39;s there it comes with unit tests.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="function"><span class="keyword">function</span> <span class="title">resume</span><span class="params">()</span> {</span>
+        <span class="keyword">if</span>(player.isPlaying()) {
+            player.resume();
+            <span class="keyword">return</span> <span class="literal">true</span>;
+        }
+        <span class="keyword">return</span> <span class="literal">false</span>;
+    }
+
     <span class="keyword">return</span> {
         search: search,
         prepare: prepare,
         play: play,
-        stop: stop
+        stop: stop,
+        pause: pause,
+        resume: resume
     };
 });</pre></div></div>
             
