@@ -3,6 +3,7 @@
     name: "main",
     out: "./js/main-built.js",
     paths: {
-        soundcloud: "empty:"
+        soundcloud: "empty:",
+        jquery: "./lib/jquery"
     }
 })

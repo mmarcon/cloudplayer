@@ -3,3 +3,6 @@ doc:
 
 build:
 	@./node_modules/.bin/r.js -o build.js
+
+dist:
+	@cd js; ../node_modules/.bin/r.js -o app.build.js
