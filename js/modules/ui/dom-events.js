@@ -2,7 +2,7 @@
 define(function(require) {
     'use strict';
 
-    var searchFormSubmitted, trackEnqueueClicked, sliderActivated, playToggled, playNext, skip, showMoreClicked;
+    var searchFormSubmitted, trackEnqueueClicked, sliderActivated, playToggled, playNext, skip, showMoreClicked, reorderOrDeleteClicked;
 
     var Controller = require('modules/controller'),
         Events = require('modules/events'),
@@ -16,6 +16,7 @@ define(function(require) {
         $('.search .results').on('touchstart click', '.enqueue', trackEnqueueClicked);
         $('.slide-control').on('touchstart click', sliderActivated);
         $('.playlist').on('touchstart click', '.more a', showMoreClicked);
+        $('.playlist').on('touchstart click', '.move', reorderOrDeleteClicked);
         $('.toggleplay').on('touchstart click', playToggled);
         $('.skip').on('touchstart click', skip);
         observe();
@@ -56,6 +57,7 @@ define(function(require) {
     showMoreClicked = function(e) {
         e.preventDefault();
         $(this).parents('.item').toggleClass('translated');
+        return false;
     };
 
     playToggled = function(e) {
@@ -82,6 +84,43 @@ define(function(require) {
         return false;
     };
 
+    reorderOrDeleteClicked = function(e) {
+        e.preventDefault();
+        var target = $(this), track = target.parents('li').eq(0), sourceIndex, destinationIndex;
+        //Sometimes controls can be disabled
+        //e.g. playing track can't be modified.
+        if(target.hasClass('disabled')) {
+            return false;
+        }
+        //Determine the index of the item in the dom that has to be moved
+        sourceIndex = track.index();
+        if(target.hasClass('remove')) {
+            //Delete item from queue
+            return Queue.remove(sourceIndex);
+        }
+        destinationIndex = getDestinationIndex(target, sourceIndex);
+        if(destinationIndex !== false) {
+            Queue.swap(sourceIndex, destinationIndex);
+        }
+        return false;
+    };
+
+    function getDestinationIndex(target, sourceIndex) {
+        if (target.hasClass('up')) {
+            if(sourceIndex === 0) {
+                //First in queue, can't be moved up
+                return false;
+            }
+            return sourceIndex - 1;
+        } else if(target.hasClass('down')) {
+            if(sourceIndex === Queue.length() - 1) {
+                //Last in queue, can't be moved down
+                return false;
+            }
+            return sourceIndex + 1;
+        }
+    }
+
     function observe(){
         dispatcher.on(Events.SEARCH_RESULTS, function(results){
             var searchResultsList = $('.search .results');
@@ -103,7 +142,7 @@ define(function(require) {
             });
         });
         dispatcher.on(Events.QUEUE_CHANGED, function(queue){
-            var playlist = $('.player .playlist');
+            var playlist = $('.playlist');
             playlist.empty();
             if(!queue) {
                 return;
@@ -118,12 +157,32 @@ define(function(require) {
                 playlist.append(li);
             });
         });
+        dispatcher.on(Events.QUEUE_ITEM_REMOVED, function(index){
+            var item = $('.playlist li').eq(index);
+            item.addClass('fade');
+            //Get rid of the list item once the CSS transition is completed.
+            //A nicer way would be to listen for `transitionend`, however
+            //that has proven to work inconsistently across browsers.
+            setTimeout(function(){
+                item.remove();
+            }, 300);
+        });
+
+        dispatcher.on(Events.QUEUE_ITEMS_SWAPPED, function(indexes){
+            var list = $('.playlist li'),
+                item0 = list.eq(indexes[0]),
+                item1 = list.eq(indexes[1]),
+                clone0 = item0.clone(true),
+                clone1 = item1.clone(true);
+
+            item1.replaceWith(clone0);
+            item0.replaceWith(clone1);
+        });
         dispatcher.on(Events.TRACK_READY, function(){
             Controller.play();
         });
         dispatcher.on(Events.TRACK_FINISHED, function(){
-            console.log('AHAH')
-            $('.player .playlist li').first().remove();
+            $('.playlist li').first().remove();
             Queue.shift();
             playNext();
         });

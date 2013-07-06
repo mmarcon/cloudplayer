@@ -21,6 +21,18 @@ define(function(require){
         return queue.shift();
     }
 
+    function remove(index) {
+        queue.splice(index, 1);
+        eventDispatcher.trigger(Events.QUEUE_ITEM_REMOVED, index);
+    }
+
+    function swap(indexA, indexB) {
+        var b = queue[indexB];
+        queue[indexB] = queue[indexA];
+        queue[indexA] = b;
+        eventDispatcher.trigger(Events.QUEUE_ITEMS_SWAPPED, [indexA, indexB]);
+    }
+
     function length() {
         return queue.length;
     }
@@ -29,6 +41,8 @@ define(function(require){
         enqueue: enqueue,
         length: length,
         get: get,
-        shift: shift
+        shift: shift,
+        remove: remove,
+        swap: swap
     };
 });

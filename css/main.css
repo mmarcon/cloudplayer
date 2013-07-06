@@ -221,6 +221,7 @@ form {
 .playlist li {
     border: 0;
     background: #ccc;
+
 }
 
 .playlist li .item {
@@ -247,6 +248,10 @@ form {
     transform: translateX(15rem);
 }
 
+.playlist li.fade {
+    opacity: 0;
+}
+
 .reorder {
     position: absolute;
     left: .2rem;
@@ -270,7 +275,7 @@ form {
     background-color: transparent;
 }
 
-.reorder .delete {
+.reorder .remove {
     background-color: transparent;
     background-position: 0 -30.8rem;
 }
