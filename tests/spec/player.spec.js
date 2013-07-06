@@ -12,6 +12,7 @@ define(function(require) {
             MOCKS.sound.pause.reset();
             MOCKS.sound.resume.reset();
             MOCKS.sound.stop.reset();
+            Events.getDispatcher().reset();
         });
         it('Prepares a track for playing, and triggers an event when ready', function() {
             var trackReadyCallback = jasmine.createSpy('Track ready callback');
@@ -47,6 +48,81 @@ define(function(require) {
             dispatcher.on(Events.TRACK_READY, trackReadyCallback);
             player.prepare(123);
             expect(MOCKS.sound.play).toHaveBeenCalled();
+        });
+        it('Can pause a track', function(){
+            spyOn(SC, 'stream').andCallFake(function(path, options, callback){
+                callback(MOCKS.sound);
+            });
+
+            var player = Player.getPlayer(),
+                dispatcher = Events.getDispatcher();
+
+            var trackReadyCallback = function(){
+                player.play();
+                player.pause();
+            };
+
+            dispatcher.on(Events.TRACK_READY, trackReadyCallback);
+            player.prepare(123);
+            expect(MOCKS.sound.pause).toHaveBeenCalled();
+        });
+        it('Resumes a track after pause', function(){
+            spyOn(SC, 'stream').andCallFake(function(path, options, callback){
+                callback(MOCKS.sound);
+            });
+
+            var player = Player.getPlayer(),
+                dispatcher = Events.getDispatcher();
+
+            var trackReadyCallback = function(){
+                player.play();
+                player.pause();
+                player.resume();
+            };
+
+            dispatcher.on(Events.TRACK_READY, trackReadyCallback);
+            player.prepare(123);
+            expect(MOCKS.sound.resume).toHaveBeenCalled();
+        });
+        it('Stops a track', function(){
+            spyOn(SC, 'stream').andCallFake(function(path, options, callback){
+                callback(MOCKS.sound);
+            });
+
+            var player = Player.getPlayer(),
+                dispatcher = Events.getDispatcher();
+
+            var trackReadyCallback = function(){
+                player.play();
+                player.stop();
+            };
+
+            dispatcher.on(Events.TRACK_READY, trackReadyCallback);
+            player.prepare(123);
+            expect(MOCKS.sound.stop).toHaveBeenCalled();
+            expect(player.currentTrack).toBe(null);
+        });
+        it('Fires an event when a track is finished', function(){
+            var trackFinishedCallback = jasmine.createSpy('Track finished callback');
+            spyOn(SC, 'stream').andCallFake(function(path, options, callback){
+                callback(MOCKS.sound);
+            });
+            MOCKS.sound.play.andCallFake(function(configuration){
+                configuration.onfinish();
+            });
+
+            var player = Player.getPlayer(),
+                dispatcher = Events.getDispatcher();
+
+            var trackReadyCallback = function(){
+                player.play();
+            };
+
+            dispatcher.on(Events.TRACK_READY, trackReadyCallback);
+            dispatcher.on(Events.TRACK_FINISHED, trackFinishedCallback);
+
+            player.prepare(123);
+            expect(trackFinishedCallback).toHaveBeenCalled();
         });
     });
 });

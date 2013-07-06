@@ -168,10 +168,11 @@ define(function(require) {
             }, 300);
         });
 
-        dispatcher.on(Events.QUEUE_ITEMS_SWAPPED, function(indexes){
+        dispatcher.on(Events.QUEUE_ITEMS_SWAPPED, function(index0, index1){
+            console.log(arguments);
             var list = $('.playlist li'),
-                item0 = list.eq(indexes[0]),
-                item1 = list.eq(indexes[1]),
+                item0 = list.eq(index0),
+                item1 = list.eq(index1),
                 clone0 = item0.clone(true),
                 clone1 = item1.clone(true);
 

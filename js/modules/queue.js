@@ -1,6 +1,5 @@
 /*global define*/
 
-//This module provides an interface to Soundcloud's search.
 define(function(require){
     'use strict';
     var Events = require('modules/events'),
@@ -8,8 +7,8 @@ define(function(require){
 
     var queue = [];
 
-    function enqueue(trackId) {
-        queue.push(trackId);
+    function enqueue(object) {
+        queue.push(object);
         eventDispatcher.trigger(Events.QUEUE_CHANGED, queue);
     }
 
@@ -30,11 +29,15 @@ define(function(require){
         var b = queue[indexB];
         queue[indexB] = queue[indexA];
         queue[indexA] = b;
-        eventDispatcher.trigger(Events.QUEUE_ITEMS_SWAPPED, [indexA, indexB]);
+        eventDispatcher.trigger(Events.QUEUE_ITEMS_SWAPPED, indexA, indexB);
     }
 
     function length() {
         return queue.length;
+    }
+
+    function empty() {
+        queue.length = 0;
     }
 
     return {
@@ -43,6 +46,7 @@ define(function(require){
         get: get,
         shift: shift,
         remove: remove,
-        swap: swap
+        swap: swap,
+        empty: empty
     };
 });

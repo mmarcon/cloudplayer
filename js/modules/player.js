@@ -36,11 +36,13 @@ define(function(require){
     };
 
     P.play = function() {
-        this.currentTrack.play({
-            onfinish: function(){
-                eventDispatcher.trigger(Events.TRACK_FINISHED);
-            }
-        });
+        if(this.currentTrack) {
+            this.currentTrack.play({
+                onfinish: function(){
+                    eventDispatcher.trigger(Events.TRACK_FINISHED);
+                }
+            });
+        }
     };
 
     P.pause = function() {
@@ -53,6 +55,7 @@ define(function(require){
 
     P.stop = function() {
         this.currentTrack.stop();
+        this.currentTrack = null;
     };
 
     return {
