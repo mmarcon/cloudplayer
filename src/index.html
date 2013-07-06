@@ -16,7 +16,7 @@
         require.config({
             baseUrl: './js',
             paths: {
-                'soundcloud': 'http://connect.soundcloud.com/sdk',
+                'soundcloud': 'https://connect.soundcloud.com/sdk',
                 'jquery': 'lib/jquery'
             },
             shim: {
@@ -70,14 +70,14 @@
 <script type="text/html" id="searchResult">
     <h4><%=title%></h4>
     <h5>by <span><%=user.username%></span></h5>
-    <img src="<%=artwork_url%>">
+    <img src="<%=sec_artwork_url%>">
     <a class="enqueue" href="#enqueue" title="Add to playlist" data-id="<%=id%>">+</a>
 </script>
 <script type="text/html" id="playlistItem">
     <div class="item">
         <h4><%=title%></h4>
         <h5>by <span><%=user.username%></span></h5>
-        <img src="<%=artwork_url%>">
+        <img src="<%=sec_artwork_url%>">
         <div class="controls more"><a href="#more"></a></div>
     </div>
     <div class="controls reorder">

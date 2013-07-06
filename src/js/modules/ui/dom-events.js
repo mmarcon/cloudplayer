@@ -133,6 +133,7 @@ define(function(require) {
                 var li = $('<li>');
                 //If the track does not have an artwork then use default image
                 res.artwork_url = res.artwork_url || 'img/default-artwork.png';
+                res.sec_artwork_url = res.artwork_url.replace('http://', 'https://');
                 //Attach the original search result to the DOM node
                 //so we can easy retrieve it when it is time to enqueue
                 //this track

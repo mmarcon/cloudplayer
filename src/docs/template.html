@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>template.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="app.build.html">
+                app.build.js
+              </a>
+            
+              
+              <a class="source" href="config.html">
+                config.js
+              </a>
+            
+              
+              <a class="source" href="main.html">
+                main.js
+              </a>
+            
+              
+              <a class="source" href="controller.html">
+                controller.js
+              </a>
+            
+              
+              <a class="source" href="events.html">
+                events.js
+              </a>
+            
+              
+              <a class="source" href="player.html">
+                player.js
+              </a>
+            
+              
+              <a class="source" href="queue.html">
+                queue.js
+              </a>
+            
+              
+              <a class="source" href="search.html">
+                search.js
+              </a>
+            
+              
+              <a class="source" href="dom-events.html">
+                dom-events.js
+              </a>
+            
+              
+              <a class="source" href="template.html">
+                template.js
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>template.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="comment">/*global define, document, Element*/</span>
+define(<span class="keyword">function</span>() {
+    <span class="string">'use strict'</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>Simple JavaScript Templating
+John Resig - <a href="http://ejohn.org/">http://ejohn.org/</a> - MIT Licensed</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> cache = {};
+
+    <span class="function"><span class="keyword">function</span> <span class="title">tmpl</span><span class="params">(str, data)</span>{</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Figure out if we&#39;re getting a template, or if we need to
+load the template - and be sure to cache the result.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="keyword">var</span> fn = !<span class="regexp">/\W/</span>.test(str) ?
+        cache[str] = cache[str] ||
+        tmpl(document.getElementById(str).innerHTML) :</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Generate a reusable function that will serve as a template
+generator (and which will be cached).</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="keyword">new</span> Function(<span class="string">"obj"</span>,
+            <span class="string">"var p=[],print=function(){p.push.apply(p,arguments);};"</span> +</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>Introduce the data as local variables using with(){}</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="string">"with(obj){p.push('"</span> +</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>Convert the template into pure JavaScript</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        str
+        .replace(<span class="regexp">/[\r\t\n]/g</span>, <span class="string">" "</span>)
+        .split(<span class="string">"&lt;%"</span>).join(<span class="string">"\t"</span>)
+        .replace(<span class="regexp">/((^|%&gt;)[^\t]*)'/g</span>, <span class="string">"$1\r"</span>)
+        .replace(<span class="regexp">/\t=(.*?)%&gt;/g</span>, <span class="string">"',$1,'"</span>)
+        .split(<span class="string">"\t"</span>).join(<span class="string">"');"</span>)
+        .split(<span class="string">"%&gt;"</span>).join(<span class="string">"p.push('"</span>)
+            .split(<span class="string">"\r"</span>).join(<span class="string">"\\'"</span>)
+            + <span class="string">"');}return p.join('');"</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>Provide some basic currying to the user</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="keyword">return</span> data ? fn( data ) : fn;
+    }
+
+    <span class="keyword">return</span> {
+        parse: tmpl
+    };
+});</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

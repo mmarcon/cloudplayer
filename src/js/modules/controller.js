@@ -1,6 +1,6 @@
 /*global define*/
 
-//The ides is to use a simple, stateless controller
+//The idea is to use a simple, stateless controller
 //that is called from DOM event handlers and takes care
 //of calling the right method on the right object that
 //invokes other services, e.g. Soundcould's search.
