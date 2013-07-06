@@ -2,7 +2,18 @@
 define(function(require) {
     'use strict';
 
-    var searchFormSubmitted, trackEnqueueClicked, sliderActivated, playToggled, playNext, skip, showMoreClicked, reorderOrDeleteClicked;
+    var searchFormSubmitted,
+        trackEnqueueClicked,
+        sliderActivated,
+        playToggled,
+        playNext,
+        skip,
+        showMoreClicked,
+        reorderOrDeleteClicked;
+
+    var toggleplay = $('.toggleplay'),
+        playlist = $('.playlist'),
+        searchResultsList = $('.search .results');
 
     var Controller = require('modules/controller'),
         Events = require('modules/events'),
@@ -13,11 +24,11 @@ define(function(require) {
 
     function bind(){
         $('.search form').on('submit', searchFormSubmitted);
-        $('.search .results').on('touchstart click', '.enqueue', trackEnqueueClicked);
+        searchResultsList.on('touchstart click', '.enqueue', trackEnqueueClicked);
         $('.slide-control').on('touchstart click', sliderActivated);
-        $('.playlist').on('touchstart click', '.more a', showMoreClicked);
-        $('.playlist').on('touchstart click', '.move', reorderOrDeleteClicked);
-        $('.toggleplay').on('touchstart click', playToggled);
+        playlist.on('touchstart click', '.more a', showMoreClicked);
+        playlist.on('touchstart click', '.move', reorderOrDeleteClicked);
+        toggleplay.on('touchstart click', playToggled);
         $('.skip').on('touchstart click', skip);
         observe();
     }
@@ -60,9 +71,21 @@ define(function(require) {
         return false;
     };
 
+    //The logic of this method is a little contorted.
+    //If the control is a *pause* control then we should definitely pause.
+    //If the control is a *play* control then it could be either *play* or *resume*.
+    //In this last case the handler tries to resume via the `Controller`. If resume
+    //fails that means nothing was playing and it is therefore an actual play.
     playToggled = function(e) {
         e.preventDefault();
-        playNext();
+        var target = $(this);
+        if(target.hasClass('pause')) {
+            Controller.pause();
+        } else if(target.hasClass('play')) {
+            if(!Controller.resume()) {
+                playNext();
+            }
+        }
         return false;
     };
 
@@ -71,6 +94,10 @@ define(function(require) {
         if(track) {
             Controller.prepare(track.id);
             console.log(track);
+        } else {
+            //No more tracks in queue. Bring UI back to
+            //initial state.
+            toggleplay.removeClass('pause').addClass('play');
         }
         return false;
     };
@@ -123,7 +150,6 @@ define(function(require) {
 
     function observe(){
         dispatcher.on(Events.SEARCH_RESULTS, function(results){
-            var searchResultsList = $('.search .results');
             searchResultsList.empty();
 
             if(!results) {
@@ -181,6 +207,17 @@ define(function(require) {
         });
         dispatcher.on(Events.TRACK_READY, function(){
             Controller.play();
+        });
+        dispatcher.on(Events.TRACK_FINISHED, function(){
+            $('.playlist li').first().remove();
+            Queue.shift();
+            playNext();
+        });
+        dispatcher.on(Events.TRACK_PLAYING, function(){
+            toggleplay.addClass('pause').removeClass('play');
+        });
+        dispatcher.on(Events.TRACK_PAUSED, function(){
+            toggleplay.removeClass('pause').addClass('play');
         });
         dispatcher.on(Events.TRACK_FINISHED, function(){
             $('.playlist li').first().remove();

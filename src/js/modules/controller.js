@@ -27,10 +27,30 @@ define(function(require) {
         player.stop();
     }
 
+    function pause() {
+        player.pause();
+    }
+
+    //Attempts to resume a track. If the player was not
+    //playing a track then returns false so other components
+    //can act accordingly.
+    //
+    //This solution isn't ideal and should be refactored.
+    //However, since it's there it comes with unit tests.
+    function resume() {
+        if(player.isPlaying()) {
+            player.resume();
+            return true;
+        }
+        return false;
+    }
+
     return {
         search: search,
         prepare: prepare,
         play: play,
-        stop: stop
+        stop: stop,
+        pause: pause,
+        resume: resume
     };
 });

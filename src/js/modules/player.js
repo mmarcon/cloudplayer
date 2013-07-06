@@ -10,6 +10,7 @@ define(function(require){
 
     Player = function(){
         this.currentTrack = null;
+        this.playing = false;
     };
 
     P = Player.prototype;
@@ -42,20 +43,35 @@ define(function(require){
                     eventDispatcher.trigger(Events.TRACK_FINISHED);
                 }
             });
+            this.playing = true;
+            eventDispatcher.trigger(Events.TRACK_PLAYING);
         }
     };
 
     P.pause = function() {
-        this.currentTrack.pause();
+        if(this.currentTrack) {
+            this.currentTrack.pause();
+            eventDispatcher.trigger(Events.TRACK_PAUSED);
+        }
     };
 
     P.resume = function() {
-        this.currentTrack.resume();
+        if(this.currentTrack) {
+            this.currentTrack.resume();
+            eventDispatcher.trigger(Events.TRACK_PLAYING);
+        }
     };
 
     P.stop = function() {
-        this.currentTrack.stop();
-        this.currentTrack = null;
+        if(this.currentTrack) {
+            this.currentTrack.stop();
+            this.playing = false;
+            this.currentTrack = null;
+        }
+    };
+
+    P.isPlaying = function(){
+        return this.playing;
     };
 
     return {
