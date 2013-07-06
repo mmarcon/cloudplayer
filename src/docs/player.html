@@ -2,7 +2,7 @@
 
 <html>
 <head>
-  <title>search.js</title>
+  <title>player.js</title>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
   <link rel="stylesheet" media="all" href="docco.css" />
@@ -66,7 +66,7 @@
         
           <li id="title">
               <div class="annotation">
-                  <h1>search.js</h1>
+                  <h1>player.js</h1>
               </div>
           </li>
         
@@ -100,7 +100,14 @@
     <span class="string">'use strict'</span>;
     <span class="keyword">var</span> SC = require(<span class="string">'soundcloud'</span>),
         Events = require(<span class="string">'modules/events'</span>),
-        eventDispatcher = Events.getDispatcher();</pre></div></div>
+        eventDispatcher = Events.getDispatcher(),
+        Player, P;
+
+    Player = <span class="keyword">function</span>(){
+        <span class="keyword">this</span>.currentTrack = <span class="literal">null</span>;
+    };
+
+    P = Player.prototype;</pre></div></div>
             
         </li>
         
@@ -111,24 +118,62 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-3">&#182;</a>
               </div>
-              <p><code>search(query, callback)</code></p>
-<p>Simple search. Given a <code>query</code> it performs a search asynchronously
-using Soundcloud&#39;s <code>/tracks</code> endpoint and returns the result either
-via a <code>callback</code> or via the central <em>EventDispatcher</em>.</p>
+              <p>When Mobile Safari on iOS is not in <em>standalone</em> mode
+sounds cannot be played in a callback.
+While we will support continuos playing just in standalone mode
+we still want to be able to play tracks one after each other
+if the user interacts with some control in the UI.</p>
+<p><code>prepare</code> will then get the stream from Soundcloud and fire an event
+when the sound is ready to be played.
+At this point the track can be played with <code>play</code>.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="function"><span class="keyword">function</span> <span class="title">search</span><span class="params">(query, callback)</span> {</span>
-        SC.get(<span class="string">'/tracks'</span>, {q: query}, <span class="keyword">function</span>(tracks) {
-            <span class="keyword">if</span>(<span class="keyword">typeof</span> callback === <span class="string">'function'</span>) {
-                callback.call(<span class="literal">null</span>, tracks);
+            <div class="content"><div class='highlight'><pre>    P.prepare = <span class="keyword">function</span>(trackId) {
+        <span class="keyword">var</span> self = <span class="keyword">this</span>;
+        SC.stream(
+            <span class="string">'/tracks/'</span> + trackId,
+            { preferFlash: <span class="literal">false</span> },
+            <span class="keyword">function</span>(track){
+                self.currentTrack = track;
+                eventDispatcher.trigger(Events.TRACK_READY);
             }
-            eventDispatcher.trigger(Events.SEARCH_RESULTS, tracks);
-        });
-    }
+        );
+    };
+
+    P.play = <span class="keyword">function</span>() {
+        <span class="keyword">if</span>(<span class="keyword">this</span>.currentTrack) {
+            <span class="keyword">this</span>.currentTrack.play({
+                onfinish: <span class="keyword">function</span>(){
+                    eventDispatcher.trigger(Events.TRACK_FINISHED);
+                }
+            });
+        }
+    };
+
+    P.pause = <span class="keyword">function</span>() {
+        <span class="keyword">this</span>.currentTrack.pause();
+    };
+
+    P.resume = <span class="keyword">function</span>() {
+        <span class="keyword">this</span>.currentTrack.resume();
+    };
+
+    P.stop = <span class="keyword">function</span>() {
+        <span class="keyword">this</span>.currentTrack.stop();
+        <span class="keyword">this</span>.currentTrack = <span class="literal">null</span>;
+    };
 
     <span class="keyword">return</span> {
-        search: search
+        getPlayer: (<span class="keyword">function</span>(){
+            <span class="keyword">var</span> player = <span class="literal">null</span>;
+            <span class="keyword">return</span> <span class="keyword">function</span>(){
+                <span class="keyword">if</span>(player === <span class="literal">null</span>) {
+                    player = <span class="keyword">new</span> Player();
+                }
+                <span class="keyword">return</span> player;
+            };
+        })()
     };
 });</pre></div></div>
             

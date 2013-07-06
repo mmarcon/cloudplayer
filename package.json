@@ -14,6 +14,7 @@
   "license": "MIT",
   "dependencies": {
     "docco": "0.6.2",
-    "requirejs": "~2.1.6"
+    "requirejs": "2.1.6",
+    "node-static": "0.7.0"
   }
 }

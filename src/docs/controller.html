@@ -2,7 +2,7 @@
 
 <html>
 <head>
-  <title>search.js</title>
+  <title>controller.js</title>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
   <link rel="stylesheet" media="all" href="docco.css" />
@@ -66,7 +66,7 @@
         
           <li id="title">
               <div class="annotation">
-                  <h1>search.js</h1>
+                  <h1>controller.js</h1>
               </div>
           </li>
         
@@ -92,43 +92,41 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-2">&#182;</a>
               </div>
-              <p>This module provides an interface to Soundcloud&#39;s search.</p>
+              <p>The ides is to use a simple, stateless controller
+that is called from DOM event handlers and takes care
+of calling the right method on the right object that
+invokes other services, e.g. Soundcould&#39;s search.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>define(<span class="keyword">function</span>(require){
+            <div class="content"><div class='highlight'><pre>define(<span class="keyword">function</span>(require) {
     <span class="string">'use strict'</span>;
-    <span class="keyword">var</span> SC = require(<span class="string">'soundcloud'</span>),
-        Events = require(<span class="string">'modules/events'</span>),
-        eventDispatcher = Events.getDispatcher();</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-3">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-3">&#182;</a>
-              </div>
-              <p><code>search(query, callback)</code></p>
-<p>Simple search. Given a <code>query</code> it performs a search asynchronously
-using Soundcloud&#39;s <code>/tracks</code> endpoint and returns the result either
-via a <code>callback</code> or via the central <em>EventDispatcher</em>.</p>
 
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>    <span class="function"><span class="keyword">function</span> <span class="title">search</span><span class="params">(query, callback)</span> {</span>
-        SC.get(<span class="string">'/tracks'</span>, {q: query}, <span class="keyword">function</span>(tracks) {
-            <span class="keyword">if</span>(<span class="keyword">typeof</span> callback === <span class="string">'function'</span>) {
-                callback.call(<span class="literal">null</span>, tracks);
-            }
-            eventDispatcher.trigger(Events.SEARCH_RESULTS, tracks);
-        });
+    <span class="keyword">var</span> Search = require(<span class="string">'modules/search'</span>),
+        Player = require(<span class="string">'modules/player'</span>),
+        player = Player.getPlayer();
+
+    <span class="function"><span class="keyword">function</span> <span class="title">search</span><span class="params">(searchTerm)</span> {</span>
+        Search.search(searchTerm);
+    }
+
+    <span class="function"><span class="keyword">function</span> <span class="title">prepare</span><span class="params">(trackId)</span> {</span>
+        player.prepare(trackId);
+    }
+
+    <span class="function"><span class="keyword">function</span> <span class="title">play</span><span class="params">()</span> {</span>
+        player.play();
+    }
+
+    <span class="function"><span class="keyword">function</span> <span class="title">stop</span><span class="params">()</span> {</span>
+        player.stop();
     }
 
     <span class="keyword">return</span> {
-        search: search
+        search: search,
+        prepare: prepare,
+        play: play,
+        stop: stop
     };
 });</pre></div></div>
             

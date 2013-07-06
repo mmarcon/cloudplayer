@@ -2,7 +2,7 @@
 
 <html>
 <head>
-  <title>main.js</title>
+  <title>queue.js</title>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
   <link rel="stylesheet" media="all" href="docco.css" />
@@ -66,7 +66,7 @@
         
           <li id="title">
               <div class="annotation">
-                  <h1>main.js</h1>
+                  <h1>queue.js</h1>
               </div>
           </li>
         
@@ -82,39 +82,55 @@
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="comment">/*global define*/</span>
+
 define(<span class="keyword">function</span>(require){
     <span class="string">'use strict'</span>;
+    <span class="keyword">var</span> Events = require(<span class="string">'modules/events'</span>),
+        eventDispatcher = Events.getDispatcher();
 
-    <span class="keyword">var</span> SC = require(<span class="string">'soundcloud'</span>),
-        config = require(<span class="string">'config'</span>),
-        DOMEvents = require(<span class="string">'modules/ui/dom-events'</span>);</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-2">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-2">&#182;</a>
-              </div>
-              <p>This is the application entry-point.
-Therefore the first thing we do is initializing
-the soundcloud SDK.</p>
+    <span class="keyword">var</span> queue = [];
 
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>    SC.initialize({
-        client_id: config.clientId
-    });
+    <span class="function"><span class="keyword">function</span> <span class="title">enqueue</span><span class="params">(object)</span> {</span>
+        queue.push(object);
+        eventDispatcher.trigger(Events.QUEUE_CHANGED, queue);
+    }
 
-    DOMEvents.bind();
+    <span class="function"><span class="keyword">function</span> <span class="title">get</span><span class="params">(index)</span> {</span>
+        <span class="keyword">return</span> (index &lt; queue.length &amp;&amp; queue[index]);
+    }
+
+    <span class="function"><span class="keyword">function</span> <span class="title">shift</span><span class="params">()</span> {</span>
+        <span class="keyword">return</span> queue.shift();
+    }
+
+    <span class="function"><span class="keyword">function</span> <span class="title">remove</span><span class="params">(index)</span> {</span>
+        queue.splice(index, <span class="number">1</span>);
+        eventDispatcher.trigger(Events.QUEUE_ITEM_REMOVED, index);
+    }
+
+    <span class="function"><span class="keyword">function</span> <span class="title">swap</span><span class="params">(indexA, indexB)</span> {</span>
+        <span class="keyword">var</span> b = queue[indexB];
+        queue[indexB] = queue[indexA];
+        queue[indexA] = b;
+        eventDispatcher.trigger(Events.QUEUE_ITEMS_SWAPPED, indexA, indexB);
+    }
+
+    <span class="function"><span class="keyword">function</span> <span class="title">length</span><span class="params">()</span> {</span>
+        <span class="keyword">return</span> queue.length;
+    }
+
+    <span class="function"><span class="keyword">function</span> <span class="title">empty</span><span class="params">()</span> {</span>
+        queue.length = <span class="number">0</span>;
+    }
 
     <span class="keyword">return</span> {
-        version: <span class="string">'0.0.0'</span>,
-        initialize: <span class="keyword">function</span>(){
-
-        }
+        enqueue: enqueue,
+        length: length,
+        get: get,
+        shift: shift,
+        remove: remove,
+        swap: swap,
+        empty: empty
     };
 });</pre></div></div>
             

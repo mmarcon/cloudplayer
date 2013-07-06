@@ -169,7 +169,6 @@ define(function(require) {
         });
 
         dispatcher.on(Events.QUEUE_ITEMS_SWAPPED, function(index0, index1){
-            console.log(arguments);
             var list = $('.playlist li'),
                 item0 = list.eq(index0),
                 item1 = list.eq(index1),
