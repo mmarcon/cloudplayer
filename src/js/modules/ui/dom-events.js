@@ -20,7 +20,8 @@ define(function(require) {
 
     var toggleplay = $('.toggleplay'),
         playlist = $('.playlist'),
-        searchResultsList = $('.search .results');
+        searchResultsList = $('.search .results'),
+        loader = $('.loader');
 
     function bind(){
         $('.search form').on('submit', searchFormSubmitted);
@@ -36,6 +37,8 @@ define(function(require) {
     searchFormSubmitted = function(e) {
         //Let's just handle everything JS side
         e.preventDefault();
+
+        loader.show();
 
         var searchBox = $('#searchTerms');
         //Should hide the keyboard on iOS
@@ -90,6 +93,7 @@ define(function(require) {
     };
 
     playNext = function() {
+        loader.show();
         var track = Queue.get(0);
         if(track) {
             Controller.prepare(track.id);
@@ -167,6 +171,7 @@ define(function(require) {
                 li.html(Template.parse('searchResult', res));
                 searchResultsList.append(li);
             });
+            loader.hide();
         });
         dispatcher.on(Events.SEARCH_TRACKINFO, function(track){
             track.artwork_url = track.artwork_url || 'img/default-artwork.png';
@@ -220,6 +225,7 @@ define(function(require) {
         });
         dispatcher.on(Events.TRACK_PLAYING, function(){
             toggleplay.addClass('pause').removeClass('play');
+            loader.hide();
         });
         dispatcher.on(Events.TRACK_PAUSED, function(){
             toggleplay.removeClass('pause').addClass('play');

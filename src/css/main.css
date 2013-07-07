@@ -310,3 +310,20 @@ form {
 .controls a.skip {
     background-position: 0 -4.4rem;
 }
+
+.loader {
+    background: #ccc url(../img/loader.gif) no-repeat 50% 40%;
+    width: 10rem;
+    height: 3rem;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    margin: -5rem auto auto -5rem;
+    border-radius: 3px;
+    color: #fff;
+    font-size: 1.4rem;
+    text-align: center;
+    font-weight: 100;
+    padding-top: 7rem;
+    display: none;
+}
