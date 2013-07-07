@@ -64,6 +64,11 @@
               </a>
             
               
+              <a class="source" href="storage.html">
+                storage.js
+              </a>
+            
+              
               <a class="source" href="dom-events.html">
                 dom-events.js
               </a>
@@ -142,8 +147,15 @@ via a <code>callback</code> or via the central <em>EventDispatcher</em>.</p>
         });
     }
 
+    <span class="function"><span class="keyword">function</span> <span class="title">loadTrackInfo</span><span class="params">(trackId)</span> {</span>
+        SC.get(<span class="string">'/tracks/'</span> + trackId, <span class="keyword">function</span>(track){
+            eventDispatcher.trigger(Events.SEARCH_TRACKINFO, track);
+        });
+    }
+
     <span class="keyword">return</span> {
-        search: search
+        search: search,
+        loadTrackInfo: loadTrackInfo
     };
 });</pre></div></div>
             

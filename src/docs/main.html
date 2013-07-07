@@ -64,6 +64,11 @@
               </a>
             
               
+              <a class="source" href="storage.html">
+                storage.js
+              </a>
+            
+              
               <a class="source" href="dom-events.html">
                 dom-events.js
               </a>
@@ -102,7 +107,8 @@ define(<span class="keyword">function</span>(require){
 
     <span class="keyword">var</span> SC = require(<span class="string">'soundcloud'</span>),
         config = require(<span class="string">'config'</span>),
-        DOMEvents = require(<span class="string">'modules/ui/dom-events'</span>);</pre></div></div>
+        DOMEvents = require(<span class="string">'modules/ui/dom-events'</span>),
+        Storage = require(<span class="string">'modules/storage'</span>);</pre></div></div>
             
         </li>
         
@@ -124,6 +130,7 @@ the soundcloud SDK.</p>
     });
 
     DOMEvents.bind();
+    Storage.init();
 
     <span class="keyword">return</span> {
         version: <span class="string">'0.0.0'</span>,

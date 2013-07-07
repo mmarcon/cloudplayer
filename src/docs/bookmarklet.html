@@ -64,6 +64,11 @@
               </a>
             
               
+              <a class="source" href="storage.html">
+                storage.js
+              </a>
+            
+              
               <a class="source" href="dom-events.html">
                 dom-events.js
               </a>
@@ -161,7 +166,7 @@ The easiest way I found was therefore the following:</p>
 <li>Wait for iframe to load</li>
 <li>Append button to each track, next to the share button in pages like <a href="https://soundcloud.com/user4953664">this one</a></li>
 <li>When button is clicked, clicked on the share sibling and hide the resulting dialog</li>
-<li>Grab Wordpress sharing code</li>
+<li>Grab Wordpress sharing code (could use the permalink instead, but using IDs seemed cleaner)</li>
 <li>Click share button again and toggle display property (<code>show</code>) so next time user clicks on share dialog is visible</li>
 <li>Do some RegExping and substringing to get track ID.</li>
 <li>Post message to iframe.</li>

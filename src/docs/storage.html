@@ -2,7 +2,7 @@
 
 <html>
 <head>
-  <title>template.js</title>
+  <title>storage.js</title>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
   <link rel="stylesheet" media="all" href="docco.css" />
@@ -86,7 +86,7 @@
         
           <li id="title">
               <div class="annotation">
-                  <h1>template.js</h1>
+                  <h1>storage.js</h1>
               </div>
           </li>
         
@@ -101,9 +101,7 @@
               
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="comment">/*global define, document, Element*/</span>
-define(<span class="keyword">function</span>() {
-    <span class="string">'use strict'</span>;</pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="comment">/*global define*/</span></pre></div></div>
             
         </li>
         
@@ -114,14 +112,22 @@ define(<span class="keyword">function</span>() {
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-2">&#182;</a>
               </div>
-              <p>Simple JavaScript Templating
-John Resig - <a href="http://ejohn.org/">http://ejohn.org/</a> - MIT Licensed</p>
+              <p>This module provides an interface to localStorage.</p>
+<p>When initialized checks localStorage to verify whether tracks
+where added to queue while application was inactive (via bookmarklet).</p>
+<p>Also binds on <code>storage</code> event so it is notified immediately if tracks are
+added from other pages (again via bookmarklet).</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> cache = {};
+            <div class="content"><div class='highlight'><pre>define(<span class="keyword">function</span>(require){
+    <span class="string">'use strict'</span>;
 
-    <span class="function"><span class="keyword">function</span> <span class="title">tmpl</span><span class="params">(str, data)</span>{</span></pre></div></div>
+    <span class="keyword">var</span> Events = require(<span class="string">'modules/events'</span>),
+        $ = require(<span class="string">'jquery'</span>),
+        eventDispatcher = Events.getDispatcher(),
+        KEY = <span class="string">'cloudplayer-dropbox'</span>,
+        storage;</pre></div></div>
             
         </li>
         
@@ -132,14 +138,13 @@ John Resig - <a href="http://ejohn.org/">http://ejohn.org/</a> - MIT Licensed</p
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-3">&#182;</a>
               </div>
-              <p>Figure out if we&#39;re getting a template, or if we need to
-load the template - and be sure to cache the result.</p>
+              <p>From the storage object loads track ids that should
+be enequeued.
+Typically called when application is initialized.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>        <span class="keyword">var</span> fn = !<span class="regexp">/\W/</span>.test(str) ?
-        cache[str] = cache[str] ||
-        tmpl(document.getElementById(str).innerHTML) :</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    <span class="function"><span class="keyword">function</span> <span class="title">loadDropbox</span><span class="params">()</span>{</span></pre></div></div>
             
         </li>
         
@@ -150,13 +155,16 @@ load the template - and be sure to cache the result.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-4">&#182;</a>
               </div>
-              <p>Generate a reusable function that will serve as a template
-generator (and which will be cached).</p>
+              <p>Attempt to load dropbox from localStorage</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>        <span class="keyword">new</span> Function(<span class="string">"obj"</span>,
-            <span class="string">"var p=[],print=function(){p.push.apply(p,arguments);};"</span> +</pre></div></div>
+            <div class="content"><div class='highlight'><pre>        <span class="keyword">var</span> dropbox = storage.getItem(KEY);
+        <span class="keyword">if</span>(!dropbox) {
+            <span class="keyword">return</span> <span class="literal">false</span>;
+        }
+        dropbox = JSON.parse(dropbox);
+        <span class="keyword">if</span>(dropbox.length &gt; <span class="number">0</span>) {</pre></div></div>
             
         </li>
         
@@ -167,11 +175,11 @@ generator (and which will be cached).</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-5">&#182;</a>
               </div>
-              <p>Introduce the data as local variables using with(){}</p>
+              <p>Some tracks are ready to be loaded.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>        <span class="string">"with(obj){p.push('"</span> +</pre></div></div>
+            <div class="content"><div class='highlight'><pre>            eventDispatcher.trigger(Events.DROPBOX_LOADED, dropbox);</pre></div></div>
             
         </li>
         
@@ -182,19 +190,23 @@ generator (and which will be cached).</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-6">&#182;</a>
               </div>
-              <p>Convert the template into pure JavaScript</p>
+              <p>Now clear the dropbox, ready to accept new items.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>        str
-        .replace(<span class="regexp">/[\r\t\n]/g</span>, <span class="string">" "</span>)
-        .split(<span class="string">"&lt;%"</span>).join(<span class="string">"\t"</span>)
-        .replace(<span class="regexp">/((^|%&gt;)[^\t]*)'/g</span>, <span class="string">"$1\r"</span>)
-        .replace(<span class="regexp">/\t=(.*?)%&gt;/g</span>, <span class="string">"',$1,'"</span>)
-        .split(<span class="string">"\t"</span>).join(<span class="string">"');"</span>)
-        .split(<span class="string">"%&gt;"</span>).join(<span class="string">"p.push('"</span>)
-            .split(<span class="string">"\r"</span>).join(<span class="string">"\\'"</span>)
-            + <span class="string">"');}return p.join('');"</span>);</pre></div></div>
+            <div class="content"><div class='highlight'><pre>            clearDropbox();
+        }
+    }
+
+    <span class="function"><span class="keyword">function</span> <span class="title">clearDropbox</span><span class="params">()</span>{</span>
+        storage.removeItem(KEY);
+    }
+
+    <span class="function"><span class="keyword">function</span> <span class="title">bindStorageEvents</span><span class="params">()</span>{</span>
+        $(window).on(<span class="string">'storage'</span>, loadDropbox);
+    }
+
+    <span class="keyword">return</span> {</pre></div></div>
             
         </li>
         
@@ -205,15 +217,19 @@ generator (and which will be cached).</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-7">&#182;</a>
               </div>
-              <p>Provide some basic currying to the user</p>
+              <p>A convenience method that makes testing easy,
+as it is not possible to overwrite the actual <code>localStorage</code>
+object with a mocked one.</p>
+<p>The application will call Storage.init(), while a test
+will call Storage.init(mockedLocalStorage);</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>        <span class="keyword">return</span> data ? fn( data ) : fn;
-    }
-
-    <span class="keyword">return</span> {
-        parse: tmpl
+            <div class="content"><div class='highlight'><pre>        init: <span class="keyword">function</span>(storageAdapter) {
+            storage = storageAdapter || window.localStorage;
+            bindStorageEvents();
+            loadDropbox();
+        }
     };
 });</pre></div></div>
             

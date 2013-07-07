@@ -64,6 +64,11 @@
               </a>
             
               
+              <a class="source" href="storage.html">
+                storage.js
+              </a>
+            
+              
               <a class="source" href="dom-events.html">
                 dom-events.js
               </a>
@@ -421,6 +426,11 @@ this track</p>
                 searchResultsList.append(li);
             });
         });
+        dispatcher.on(Events.SEARCH_TRACKINFO, <span class="keyword">function</span>(track){
+            track.artwork_url = track.artwork_url || <span class="string">'img/default-artwork.png'</span>;
+            track.sec_artwork_url = track.artwork_url.replace(<span class="string">'http://'</span>, <span class="string">'https://'</span>);
+            Queue.enqueue(track);
+        });
         dispatcher.on(Events.QUEUE_CHANGED, <span class="keyword">function</span>(queue){
             <span class="keyword">var</span> playlist = $(<span class="string">'.playlist'</span>);
             playlist.empty();
@@ -502,6 +512,11 @@ that has proven to work inconsistently across browsers.</p>
             $(<span class="string">'.playlist li'</span>).first().remove();
             Queue.shift();
             playNext();
+        });
+        dispatcher.on(Events.DROPBOX_LOADED, <span class="keyword">function</span>(dropbox){
+            dropbox.forEach(<span class="keyword">function</span>(trackId){
+                Controller.loadTrackInfo(trackId);
+            });
         });
     }
 

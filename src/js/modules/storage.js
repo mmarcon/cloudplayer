@@ -1,6 +1,12 @@
 /*global define*/
 
 //This module provides an interface to localStorage.
+//
+//When initialized checks localStorage to verify whether tracks
+//where added to queue while application was inactive (via bookmarklet).
+//
+//Also binds on `storage` event so it is notified immediately if tracks are
+//added from other pages (again via bookmarklet).
 define(function(require){
     'use strict';
 

@@ -64,6 +64,11 @@
               </a>
             
               
+              <a class="source" href="storage.html">
+                storage.js
+              </a>
+            
+              
               <a class="source" href="dom-events.html">
                 dom-events.js
               </a>
@@ -125,6 +130,10 @@ invokes other services, e.g. Soundcould&#39;s search.</p>
         Search.search(searchTerm);
     }
 
+    <span class="function"><span class="keyword">function</span> <span class="title">loadTrackInfo</span><span class="params">(trackId)</span> {</span>
+        Search.loadTrackInfo(trackId);
+    }
+
     <span class="function"><span class="keyword">function</span> <span class="title">prepare</span><span class="params">(trackId)</span> {</span>
         player.prepare(trackId);
     }
@@ -172,7 +181,8 @@ However, since it&#39;s there it comes with unit tests.</p>
         play: play,
         stop: stop,
         pause: pause,
-        resume: resume
+        resume: resume,
+        loadTrackInfo: loadTrackInfo
     };
 });</pre></div></div>
             
