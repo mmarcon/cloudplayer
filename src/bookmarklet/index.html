@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Cloudplayer - Bookmarklet</title>
+    <link rel="stylesheet" href="css/normalize.css">
+    <!--[if IE]>
+        <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <style>
+        header, section {
+            margin: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+    <h1>Cloudplayer</h1>
+    <h2>Bookmarklet</h2>
+    </header>
+    <section>
+        <p>Install bookmarklet by dragging and dropping the following link to your bookmark bar:</p>
+        <p><a href="javascript:(function()%7B(function($,w,doc)%7Bvar%20IFRAME_URL='https://cpl.eu01.aws.af.cm/bookmarklet/bookmarklet.html',iframe;function%20injectIframe(onload)%7Biframe=doc.createElement('iframe');iframe.setAttribute('frameborder',0);iframe.className='cloudplayer-iframe';iframe.setAttribute('style','position:absolute;top:0;left:0;width:0;height:0;display:none');iframe.onload=onload;iframe.src=IFRAME_URL;$('body').append(iframe);%7Dfunction%20post(message)%7Biframe.contentWindow.postMessage(message,'*');%7D$(document).on('click','.cloud-player',function(e)%7Be.preventDefault();var%20$this=$(this);if($this.hasClass('cloud-player-added'))%7Breturn%20false;%7Dvar%20sibling=$this.siblings('.sc-button-share').click();$('.dialog').hide();var%20wpcode=$('.shareContent__wordpressCodeField').val();$('.dialog').show();sibling.click();$this.css('opacity',0.5).addClass('cloud-player-added');var%20scURL=wpcode.match(new%20RegExp('.+url=%22(%5B%5E%22%5D+)%22.+'));scURL=scURL?scURL%5B1%5D:null;if(scURL)%7Bvar%20trackId=scURL.substring(scURL.lastIndexOf('/')+1);post(trackId);%7D%7D);var%20appender=function()%7Bvar%20b=$('%3Cbutton%20title=%22Share%22%20class=%22sc-button%20sc-button-small%20cloud-player%22%3ECloudplayer%3C/button%3E');$('.sc-button-group').not('.cloud-player-enabled').append(b.clone()).addClass('cloud-player-enabled');setTimeout(appender,1500);%7D;injectIframe(function()%7Bappender();%7D);%7D)(jQuery,window,document);%7D)();">Cloudplayer bookmarklet</a></p>
+    </section>
+</body>
