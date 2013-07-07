@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>bookmarklet.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="bookmarklet.html">
+                bookmarklet.js
+              </a>
+            
+              
+              <a class="source" href="app.build.html">
+                app.build.js
+              </a>
+            
+              
+              <a class="source" href="config.html">
+                config.js
+              </a>
+            
+              
+              <a class="source" href="main.html">
+                main.js
+              </a>
+            
+              
+              <a class="source" href="controller.html">
+                controller.js
+              </a>
+            
+              
+              <a class="source" href="events.html">
+                events.js
+              </a>
+            
+              
+              <a class="source" href="player.html">
+                player.js
+              </a>
+            
+              
+              <a class="source" href="queue.html">
+                queue.js
+              </a>
+            
+              
+              <a class="source" href="search.html">
+                search.js
+              </a>
+            
+              
+              <a class="source" href="dom-events.html">
+                dom-events.js
+              </a>
+            
+              
+              <a class="source" href="template.html">
+                template.js
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>bookmarklet.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              <p>Crunch with <a href="http://ted.mielczarek.org/code/mozilla/bookmarklet.html">http://ted.mielczarek.org/code/mozilla/bookmarklet.html</a></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>(<span class="keyword">function</span>($, w, doc){
+    <span class="keyword">var</span> IFRAME_URL = <span class="string">'https://cpl.eu01.aws.af.cm/bookmarklet/bookmarklet.html'</span>,
+        iframe;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>I am going to use local storage to get tracks to be enqueued from Soundcloud
+therefore I will use an iframe to do local storage cross domain.
+Chrome will complain in the console, but it&#39;s a bookmarklet, it&#39;ll be fine.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="function"><span class="keyword">function</span> <span class="title">injectIframe</span><span class="params">(onload)</span>{</span>
+        iframe = doc.createElement(<span class="string">'iframe'</span>);
+        iframe.setAttribute(<span class="string">'frameborder'</span>, <span class="number">0</span>);
+        iframe.className = <span class="string">'cloudplayer-iframe'</span>;
+        iframe.setAttribute(<span class="string">'style'</span>, <span class="string">'position:absolute;top:0;left:0;width:0;height:0;display:none'</span>);
+        iframe.onload = onload;
+        iframe.src = IFRAME_URL;
+        $(<span class="string">'body'</span>).append(iframe);
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>iframe content is listening for messages, so use
+<code>postMessage</code> to communicate with it.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="function"><span class="keyword">function</span> <span class="title">post</span><span class="params">(message)</span> {</span>
+        iframe.contentWindow.postMessage(message, <span class="string">'*'</span>);
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>I could not find any reference to track ids in Soundcloud&#39;s pages.
+Once upon a time waveforms were included as images so id could be extracted from
+there however it&#39;s no longer the case as waveforms are rendered on canvas.
+The easiest way I found was therefore the following:</p>
+<ol>
+<li>Wait for iframe to load</li>
+<li>Append button to each track, next to the share button in pages like <a href="https://soundcloud.com/user4953664">this one</a></li>
+<li>When button is clicked, clicked on the share sibling and hide the resulting dialog</li>
+<li>Grab Wordpress sharing code</li>
+<li>Click share button again and toggle display property (<code>show</code>) so next time user clicks on share dialog is visible</li>
+<li>Do some RegExping and substringing to get track ID.</li>
+<li>Post message to iframe.</li>
+<li>Every 1.5 secs look at the page again and see if more <em>Cloudplayer</em> buttons need to be added. This is to cope with infinite scrolling.</li>
+</ol>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    $(document).on(<span class="string">'click'</span>, <span class="string">'.cloud-player'</span>, <span class="keyword">function</span>(e){
+        e.preventDefault();
+        <span class="keyword">var</span> $<span class="keyword">this</span> = $(<span class="keyword">this</span>);
+        <span class="keyword">if</span>($<span class="keyword">this</span>.hasClass(<span class="string">'cloud-player-added'</span>)) {
+            <span class="keyword">return</span> <span class="literal">false</span>;
+        }
+        <span class="keyword">var</span> sibling = $<span class="keyword">this</span>.siblings(<span class="string">'.sc-button-share'</span>).click();
+        $(<span class="string">'.dialog'</span>).hide();
+        <span class="keyword">var</span> wpcode = $(<span class="string">'.shareContent__wordpressCodeField'</span>).val();
+        $(<span class="string">'.dialog'</span>).show();
+        sibling.click();
+        $<span class="keyword">this</span>.css(<span class="string">'opacity'</span>, <span class="number">0.5</span>).addClass(<span class="string">'cloud-player-added'</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>I need to use a RegExp object due to a bug in the bookmarklet crunchinator</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="keyword">var</span> scURL = wpcode.match(<span class="keyword">new</span> RegExp(<span class="string">'.+url="([^"]+)".+'</span>));
+        scURL = scURL ? scURL[<span class="number">1</span>] : <span class="literal">null</span>;
+        <span class="keyword">if</span>(scURL) {
+            <span class="keyword">var</span> trackId = scURL.substring(scURL.lastIndexOf(<span class="string">'/'</span>) + <span class="number">1</span>);
+            post(trackId);
+        }
+    });
+
+    <span class="keyword">var</span> appender = <span class="keyword">function</span>(){
+        <span class="keyword">var</span> b = $(<span class="string">'&lt;button title="Share" class="sc-button sc-button-small cloud-player"&gt;Cloudplayer&lt;/button&gt;'</span>);
+        $(<span class="string">'.sc-button-group'</span>).not(<span class="string">'.cloud-player-enabled'</span>).append(b.clone()).addClass(<span class="string">'cloud-player-enabled'</span>);
+        setTimeout(appender, <span class="number">1500</span>);
+    };
+
+    injectIframe(<span class="keyword">function</span>(){
+        appender();
+    });
+
+})(jQuery, window, document);</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>
