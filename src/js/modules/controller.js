@@ -15,6 +15,10 @@ define(function(require) {
         Search.search(searchTerm);
     }
 
+    function loadTrackInfo(trackId) {
+        Search.loadTrackInfo(trackId);
+    }
+
     function prepare(trackId) {
         player.prepare(trackId);
     }
@@ -51,6 +55,7 @@ define(function(require) {
         play: play,
         stop: stop,
         pause: pause,
-        resume: resume
+        resume: resume,
+        loadTrackInfo: loadTrackInfo
     };
 });

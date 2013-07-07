@@ -19,6 +19,7 @@
             '../tests/spec/queue.spec',
             '../tests/spec/search.spec',
             '../tests/spec/player.spec',
+            '../tests/spec/storage.spec',
             '../tests/spec/controller.spec'
         ];
     </script>
@@ -29,7 +30,8 @@
     require.config({
         baseUrl: '../js',
         paths: {
-            'soundcloud': '../tests/lib/soundcloud.mock'
+            'soundcloud': '../tests/lib/soundcloud.mock',
+            'jquery': 'lib/jquery'
         },
         shim: {
             'soundcloud': {

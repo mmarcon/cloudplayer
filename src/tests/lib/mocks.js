@@ -6,3 +6,7 @@ MOCKS.sound = {
     resume: jasmine.createSpy('Sound resume'),
     stop: jasmine.createSpy('Sound stop')
 };
+MOCKS.localStorage = {
+    getItem: jasmine.createSpy('localStorage getItem'),
+    removeItem: jasmine.createSpy('localStorage removeItem')
+};

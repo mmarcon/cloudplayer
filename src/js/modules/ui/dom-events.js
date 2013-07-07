@@ -168,6 +168,11 @@ define(function(require) {
                 searchResultsList.append(li);
             });
         });
+        dispatcher.on(Events.SEARCH_TRACKINFO, function(track){
+            track.artwork_url = track.artwork_url || 'img/default-artwork.png';
+            track.sec_artwork_url = track.artwork_url.replace('http://', 'https://');
+            Queue.enqueue(track);
+        });
         dispatcher.on(Events.QUEUE_CHANGED, function(queue){
             var playlist = $('.playlist');
             playlist.empty();
@@ -223,6 +228,11 @@ define(function(require) {
             $('.playlist li').first().remove();
             Queue.shift();
             playNext();
+        });
+        dispatcher.on(Events.DROPBOX_LOADED, function(dropbox){
+            dropbox.forEach(function(trackId){
+                Controller.loadTrackInfo(trackId);
+            });
         });
     }
 

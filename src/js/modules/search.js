@@ -21,7 +21,14 @@ define(function(require){
         });
     }
 
+    function loadTrackInfo(trackId) {
+        SC.get('/tracks/' + trackId, function(track){
+            eventDispatcher.trigger(Events.SEARCH_TRACKINFO, track);
+        });
+    }
+
     return {
-        search: search
+        search: search,
+        loadTrackInfo: loadTrackInfo
     };
 });

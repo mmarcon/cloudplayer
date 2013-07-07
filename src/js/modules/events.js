@@ -40,12 +40,14 @@ define(function(){
             };
         })(),
         SEARCH_RESULTS: 'searchresults',
+        SEARCH_TRACKINFO: 'searchtrackinfo',
         QUEUE_CHANGED: 'queuechanged',
         QUEUE_ITEM_REMOVED: 'queueitemremoved',
         QUEUE_ITEMS_SWAPPED: 'queueitemsswapped',
         TRACK_READY: 'trackready',
         TRACK_FINISHED: 'trackfinished',
         TRACK_PLAYING: 'trackplaying',
-        TRACK_PAUSED: 'trackpaused'
+        TRACK_PAUSED: 'trackpaused',
+        DROPBOX_LOADED: 'dropboxloaded'
     };
 });

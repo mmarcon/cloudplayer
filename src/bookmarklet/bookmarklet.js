@@ -30,7 +30,7 @@
     // 0. Wait for iframe to load
     // 1. Append button to each track, next to the share button in pages like [this one](https://soundcloud.com/user4953664)
     // 2. When button is clicked, clicked on the share sibling and hide the resulting dialog
-    // 3. Grab Wordpress sharing code
+    // 3. Grab Wordpress sharing code (could use the permalink instead, but using IDs seemed cleaner)
     // 4. Click share button again and toggle display property (`show`) so next time user clicks on share dialog is visible
     // 5. Do some RegExping and substringing to get track ID.
     // 6. Post message to iframe.
