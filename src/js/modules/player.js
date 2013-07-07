@@ -41,10 +41,12 @@ define(function(require){
             this.currentTrack.play({
                 onfinish: function(){
                     eventDispatcher.trigger(Events.TRACK_FINISHED);
+                },
+                onplay: function(){
+                    eventDispatcher.trigger(Events.TRACK_PLAYING);
                 }
             });
             this.playing = true;
-            eventDispatcher.trigger(Events.TRACK_PLAYING);
         }
     };
 

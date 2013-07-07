@@ -34,6 +34,25 @@ define(function(require) {
         observe();
     }
 
+    //`play` unfortunately does nothing on Mobile Safari
+    //when launched in non-standalone mode, unless it is
+    //triggered by a user action.
+    //
+    //Unfortunately there is no way to tell whether
+    //the track is being played, but in `index.html`
+    //we are setting a class on the body.
+    //
+    //This function returns `true` if the current browser
+    //is able to play sounds with no user action required.
+    //It returns `false` otherwise.
+    function canPlay(){
+        var body = $('body');
+        if(body.hasClass('ios') && !body.hasClass('standalone')) {
+            return false;
+        }
+        return true;
+    }
+
     searchFormSubmitted = function(e) {
         //Let's just handle everything JS side
         e.preventDefault();
