@@ -1,6 +1,14 @@
 <script>
-    var ls = window.localStorage;;
+    var ls = window.localStorage;
     window.onmessage = function(e){
-        console.log(e);
+        var dropbox = ls.getItem('cloudplayer-dropbox');
+        if(dropbox) {
+            dropbox = JSON.parse(dropbox);
+            //At this point dropbox should be an array
+        } else {
+            dropbox = [];
+        }
+        dropbox.push(e.data);
+        ls.setItem('cloudplayer-dropbox', JSON.stringify(dropbox));
     };
 </script>
