@@ -37,14 +37,15 @@ define(function(require){
     };
 
     P.play = function() {
-        if(this.currentTrack) {
-            this.currentTrack.play({
+        var self = this;
+        if(self.currentTrack) {
+            self.currentTrack.play({
                 onfinish: function(){
-                    console.log('onfinish');
+                    self.playing = false;
                     eventDispatcher.trigger(Events.TRACK_FINISHED);
                 }
             });
-            this.playing = true;
+            self.playing = true;
             eventDispatcher.trigger(Events.TRACK_PLAYING);
         }
     };

@@ -6,6 +6,8 @@ define(function(require) {
         trackEnqueueClicked,
         sliderActivated,
         playToggled,
+        iosPlayToggled,
+        othersPlayToggled,
         playNext,
         skip,
         showMoreClicked,
@@ -21,7 +23,8 @@ define(function(require) {
     var toggleplay = $('.toggleplay'),
         playlist = $('.playlist'),
         searchResultsList = $('.search .results'),
-        loader = $('.loader');
+        loader = $('.loader'),
+        body = $('body');
 
     function bind(){
         $('.search form').on('submit', searchFormSubmitted);
@@ -46,7 +49,6 @@ define(function(require) {
     //is able to play sounds with no user action required.
     //It returns `false` otherwise.
     function canPlay(){
-        var body = $('body');
         if(body.hasClass('ios') && !body.hasClass('standalone')) {
             return false;
         }
@@ -84,6 +86,9 @@ define(function(require) {
     sliderActivated = function(e) {
         e.preventDefault();
         $('.slider').toggleClass('slide');
+        if(!canPlay()){
+            playNext();
+        }
         return false;
     };
 
@@ -100,6 +105,44 @@ define(function(require) {
     //fails that means nothing was playing and it is therefore an actual play.
     playToggled = function(e) {
         e.preventDefault();
+        if(canPlay()) {
+            othersPlayToggled.call(this, e);
+        } else {
+            iosPlayToggled.call(this, e);
+        }
+        return false;
+    };
+
+    //This function handles events on the special toggle play
+    //used for iOS where tracks can't be played continuosly when
+    //browser is in non-standalone mode.
+    //
+    //It seems much cleaner to separate event handlers rather than having a bunch of if
+    //contitions on the same one.
+    iosPlayToggled = function(e) {
+        var target = $(this);
+        if(target.hasClass('preparing')) {
+            return;
+        }
+        //For Mobile safari this handler **assumes
+        //the first track in the queue has been preloaded already**.
+        //
+        //Every time a tracks finishes playing it is preloaded
+        //down in the `TRACK_FINISHED` event handler.
+        //
+        //Before any track is played, every time the UI changes state the
+        //first track in the list is preloaded.
+        if(target.hasClass('pause')) {
+            Controller.pause();
+        } else if(target.hasClass('play')) {
+            if(!Controller.resume()) {
+                Controller.play();
+            }
+        }
+    };
+
+    //This instead handles play on all other browsers
+    othersPlayToggled = function(e) {
         var target = $(this);
         if(target.hasClass('pause')) {
             Controller.pause();
@@ -108,19 +151,20 @@ define(function(require) {
                 playNext();
             }
         }
-        return false;
     };
 
     playNext = function() {
-        loader.show();
         var track = Queue.get(0);
         if(track) {
+            loader.show();
+            toggleplay.addClass('preparing');
             Controller.prepare(track.id);
             console.log(track);
         } else {
             //No more tracks in queue. Bring UI back to
             //initial state.
             toggleplay.removeClass('pause').addClass('play');
+            playlist.removeClass('playing');
         }
         return false;
     };
@@ -129,6 +173,7 @@ define(function(require) {
         e.preventDefault();
         Controller.stop();
         $('.player .playlist li').first().remove();
+        toggleplay.removeClass('pause').addClass('play');
         Queue.shift();
         playNext();
         return false;
@@ -152,13 +197,19 @@ define(function(require) {
         if(destinationIndex !== false) {
             Queue.swap(sourceIndex, destinationIndex);
         }
+        if(!canPlay()){
+            playNext();
+        }
         return false;
     };
 
     function getDestinationIndex(target, sourceIndex) {
         if (target.hasClass('up')) {
-            if(sourceIndex === 0) {
-                //First in queue, can't be moved up
+            if(sourceIndex === 0 ||
+                (sourceIndex === 1 && $('.player .playlist li').first().hasClass('disabled'))) {
+                //First in queue or second item in queue
+                //with the first one already playing:
+                //can't be moved up
                 return false;
             }
             return sourceIndex - 1;
@@ -235,17 +286,24 @@ define(function(require) {
             item0.replaceWith(clone1);
         });
         dispatcher.on(Events.TRACK_READY, function(){
-            $('.playlist li').first().addClass('disabled');
-            Controller.play();
+            //Only play if the browser is capable of playing
+            if(canPlay()) {
+                $('.playlist li').first().addClass('disabled');
+                Controller.play();
+            }
+            console.log('HEREj');
+            toggleplay.removeClass('preparing');
+            loader.hide();
         });
         dispatcher.on(Events.TRACK_FINISHED, function(){
             $('.playlist li').first().remove();
+            toggleplay.removeClass('pause').addClass('play');
             Queue.shift();
             playNext();
         });
         dispatcher.on(Events.TRACK_PLAYING, function(){
             toggleplay.addClass('pause').removeClass('play');
-            loader.hide();
+            playlist.addClass('playing');
         });
         dispatcher.on(Events.TRACK_PAUSED, function(){
             toggleplay.removeClass('pause').addClass('play');
