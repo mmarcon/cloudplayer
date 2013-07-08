@@ -1,5 +1,9 @@
 /*global define*/
 
+//This modules defines a queue that is used as the model
+//behind the playlist.
+//It is essentially a bunch of functions that perform
+//operations on a private array, nothing really fancy.
 define(function(require){
     'use strict';
     var Events = require('modules/events'),
