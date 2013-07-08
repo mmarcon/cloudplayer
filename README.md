@@ -67,9 +67,17 @@ this command generates the documentation for all the JS files, optimizes and min
 
 ## Show me!
 
+### Live
+
  * [Cloudplayer](https://cpl.eu01.aws.af.cm)
+ * [Bookmarklet](https://cpl.eu01.aws.af.cm/bookmarklet/)
  * [Documentation](https://cpl.eu01.aws.af.cm/docs.html)
  * [Tests](https://cpl.eu01.aws.af.cm/tests)
+
+### On Youtube
+
+ * [Cloudplayer on iOS](http://youtu.be/cI2Q1fZCf70)
+ * [Cloudplayer bookmarklet](http://youtu.be/N46OgvOjEDE)
  
 ## Feedback on Soundcloud API
  
