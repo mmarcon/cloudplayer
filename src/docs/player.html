@@ -166,6 +166,7 @@ At this point the track can be played with <code>play</code>.</p>
         <span class="keyword">if</span>(<span class="keyword">this</span>.currentTrack) {
             <span class="keyword">this</span>.currentTrack.play({
                 onfinish: <span class="keyword">function</span>(){
+                    console.log(<span class="string">'onfinish'</span>);
                     eventDispatcher.trigger(Events.TRACK_FINISHED);
                 }
             });

@@ -40,13 +40,12 @@ define(function(require){
         if(this.currentTrack) {
             this.currentTrack.play({
                 onfinish: function(){
+                    console.log('onfinish');
                     eventDispatcher.trigger(Events.TRACK_FINISHED);
-                },
-                onplay: function(){
-                    eventDispatcher.trigger(Events.TRACK_PLAYING);
                 }
             });
             this.playing = true;
+            eventDispatcher.trigger(Events.TRACK_PLAYING);
         }
     };
 

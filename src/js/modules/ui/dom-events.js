@@ -249,11 +249,6 @@ define(function(require) {
         dispatcher.on(Events.TRACK_PAUSED, function(){
             toggleplay.removeClass('pause').addClass('play');
         });
-        dispatcher.on(Events.TRACK_FINISHED, function(){
-            $('.playlist li').first().remove();
-            Queue.shift();
-            playNext();
-        });
         dispatcher.on(Events.DROPBOX_LOADED, function(dropbox){
             dropbox.forEach(function(trackId){
                 Controller.loadTrackInfo(trackId);

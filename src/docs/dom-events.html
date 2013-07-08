@@ -123,7 +123,8 @@ define(<span class="keyword">function</span>(require) {
 
     <span class="keyword">var</span> toggleplay = $(<span class="string">'.toggleplay'</span>),
         playlist = $(<span class="string">'.playlist'</span>),
-        searchResultsList = $(<span class="string">'.search .results'</span>);
+        searchResultsList = $(<span class="string">'.search .results'</span>),
+        loader = $(<span class="string">'.loader'</span>);
 
     <span class="function"><span class="keyword">function</span> <span class="title">bind</span><span class="params">()</span>{</span>
         $(<span class="string">'.search form'</span>).on(<span class="string">'submit'</span>, searchFormSubmitted);
@@ -134,9 +135,7 @@ define(<span class="keyword">function</span>(require) {
         toggleplay.on(<span class="string">'touchstart click'</span>, playToggled);
         $(<span class="string">'.skip'</span>).on(<span class="string">'touchstart click'</span>, skip);
         observe();
-    }
-
-    searchFormSubmitted = <span class="keyword">function</span>(e) {</pre></div></div>
+    }</pre></div></div>
             
         </li>
         
@@ -147,13 +146,27 @@ define(<span class="keyword">function</span>(require) {
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-2">&#182;</a>
               </div>
-              <p>Let&#39;s just handle everything JS side</p>
+              <p><code>play</code> unfortunately does nothing on Mobile Safari
+when launched in non-standalone mode, unless it is
+triggered by a user action.</p>
+<p>Unfortunately there is no way to tell whether
+the track is being played, but in <code>index.html</code>
+we are setting a class on the body.</p>
+<p>This function returns <code>true</code> if the current browser
+is able to play sounds with no user action required.
+It returns <code>false</code> otherwise.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>        e.preventDefault();
+            <div class="content"><div class='highlight'><pre>    <span class="function"><span class="keyword">function</span> <span class="title">canPlay</span><span class="params">()</span>{</span>
+        <span class="keyword">var</span> body = $(<span class="string">'body'</span>);
+        <span class="keyword">if</span>(body.hasClass(<span class="string">'ios'</span>) &amp;&amp; !body.hasClass(<span class="string">'standalone'</span>)) {
+            <span class="keyword">return</span> <span class="literal">false</span>;
+        }
+        <span class="keyword">return</span> <span class="literal">true</span>;
+    }
 
-        <span class="keyword">var</span> searchBox = $(<span class="string">'#searchTerms'</span>);</pre></div></div>
+    searchFormSubmitted = <span class="keyword">function</span>(e) {</pre></div></div>
             
         </li>
         
@@ -164,11 +177,15 @@ define(<span class="keyword">function</span>(require) {
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-3">&#182;</a>
               </div>
-              <p>Should hide the keyboard on iOS</p>
+              <p>Let&#39;s just handle everything JS side</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>        searchBox.blur();</pre></div></div>
+            <div class="content"><div class='highlight'><pre>        e.preventDefault();
+
+        loader.show();
+
+        <span class="keyword">var</span> searchBox = $(<span class="string">'#searchTerms'</span>);</pre></div></div>
             
         </li>
         
@@ -178,6 +195,21 @@ define(<span class="keyword">function</span>(require) {
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Should hide the keyboard on iOS</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        searchBox.blur();</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
               </div>
               <p>Basic query validation</p>
 
@@ -216,11 +248,11 @@ define(<span class="keyword">function</span>(require) {
         </li>
         
         
-        <li id="section-5">
+        <li id="section-6">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-5">&#182;</a>
+                <a class="pilcrow" href="#section-6">&#182;</a>
               </div>
               <p>The logic of this method is a little contorted.
 If the control is a <em>pause</em> control then we should definitely pause.
@@ -244,6 +276,7 @@ fails that means nothing was playing and it is therefore an actual play.</p>
     };
 
     playNext = <span class="keyword">function</span>() {
+        loader.show();
         <span class="keyword">var</span> track = Queue.get(<span class="number">0</span>);
         <span class="keyword">if</span>(track) {
             Controller.prepare(track.id);
@@ -253,11 +286,11 @@ fails that means nothing was playing and it is therefore an actual play.</p>
         </li>
         
         
-        <li id="section-6">
+        <li id="section-7">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-6">&#182;</a>
+                <a class="pilcrow" href="#section-7">&#182;</a>
               </div>
               <p>No more tracks in queue. Bring UI back to
 initial state.</p>
@@ -285,11 +318,11 @@ initial state.</p>
         </li>
         
         
-        <li id="section-7">
+        <li id="section-8">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-7">&#182;</a>
+                <a class="pilcrow" href="#section-8">&#182;</a>
               </div>
               <p>Sometimes controls can be disabled
 e.g. playing track can&#39;t be modified.</p>
@@ -303,11 +336,11 @@ e.g. playing track can&#39;t be modified.</p>
         </li>
         
         
-        <li id="section-8">
+        <li id="section-9">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-8">&#182;</a>
+                <a class="pilcrow" href="#section-9">&#182;</a>
               </div>
               <p>Determine the index of the item in the dom that has to be moved</p>
 
@@ -319,11 +352,11 @@ e.g. playing track can&#39;t be modified.</p>
         </li>
         
         
-        <li id="section-9">
+        <li id="section-10">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-9">&#182;</a>
+                <a class="pilcrow" href="#section-10">&#182;</a>
               </div>
               <p>Delete item from queue</p>
 
@@ -345,11 +378,11 @@ e.g. playing track can&#39;t be modified.</p>
         </li>
         
         
-        <li id="section-10">
+        <li id="section-11">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-10">&#182;</a>
+                <a class="pilcrow" href="#section-11">&#182;</a>
               </div>
               <p>First in queue, can&#39;t be moved up</p>
 
@@ -364,11 +397,11 @@ e.g. playing track can&#39;t be modified.</p>
         </li>
         
         
-        <li id="section-11">
+        <li id="section-12">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-11">&#182;</a>
+                <a class="pilcrow" href="#section-12">&#182;</a>
               </div>
               <p>Last in queue, can&#39;t be moved down</p>
 
@@ -393,11 +426,11 @@ e.g. playing track can&#39;t be modified.</p>
         </li>
         
         
-        <li id="section-12">
+        <li id="section-13">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-12">&#182;</a>
+                <a class="pilcrow" href="#section-13">&#182;</a>
               </div>
               <p>If the track does not have an artwork then use default image</p>
 
@@ -409,11 +442,11 @@ e.g. playing track can&#39;t be modified.</p>
         </li>
         
         
-        <li id="section-13">
+        <li id="section-14">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-13">&#182;</a>
+                <a class="pilcrow" href="#section-14">&#182;</a>
               </div>
               <p>Attach the original search result to the DOM node
 so we can easy retrieve it when it is time to enqueue
@@ -425,6 +458,7 @@ this track</p>
                 li.html(Template.parse(<span class="string">'searchResult'</span>, res));
                 searchResultsList.append(li);
             });
+            loader.hide();
         });
         dispatcher.on(Events.SEARCH_TRACKINFO, <span class="keyword">function</span>(track){
             track.artwork_url = track.artwork_url || <span class="string">'img/default-artwork.png'</span>;
@@ -443,11 +477,11 @@ this track</p>
         </li>
         
         
-        <li id="section-14">
+        <li id="section-15">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-14">&#182;</a>
+                <a class="pilcrow" href="#section-15">&#182;</a>
               </div>
               <p>Attach the original item to the DOM node
 so we can easy retrieve it when it is time to enqueue
@@ -467,11 +501,11 @@ this track</p>
         </li>
         
         
-        <li id="section-15">
+        <li id="section-16">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-15">&#182;</a>
+                <a class="pilcrow" href="#section-16">&#182;</a>
               </div>
               <p>Get rid of the list item once the CSS transition is completed.
 A nicer way would be to listen for <code>transitionend</code>, however
@@ -504,14 +538,10 @@ that has proven to work inconsistently across browsers.</p>
         });
         dispatcher.on(Events.TRACK_PLAYING, <span class="keyword">function</span>(){
             toggleplay.addClass(<span class="string">'pause'</span>).removeClass(<span class="string">'play'</span>);
+            loader.hide();
         });
         dispatcher.on(Events.TRACK_PAUSED, <span class="keyword">function</span>(){
             toggleplay.removeClass(<span class="string">'pause'</span>).addClass(<span class="string">'play'</span>);
-        });
-        dispatcher.on(Events.TRACK_FINISHED, <span class="keyword">function</span>(){
-            $(<span class="string">'.playlist li'</span>).first().remove();
-            Queue.shift();
-            playNext();
         });
         dispatcher.on(Events.DROPBOX_LOADED, <span class="keyword">function</span>(dropbox){
             dropbox.forEach(<span class="keyword">function</span>(trackId){
