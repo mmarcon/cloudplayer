@@ -79,6 +79,10 @@ this command generates the documentation for all the JS files, optimizes and min
  * [Cloudplayer on iOS](http://youtu.be/cI2Q1fZCf70)
  * [Cloudplayer bookmarklet](http://youtu.be/N46OgvOjEDE)
  
+## Known bugs
+
+The app works great on Chrome for Android, but unfortunately it does not behave well on Android's stock browser. Sometimes when tracks are in the playlist and the play button is touched everyhting just disappears from the playlist.
+ 
 ## Feedback on Soundcloud API
  
 Easy to use, although documentation could be a bit easier to use, sometimes things are hard to find (e.g. I can never find *Search*, it takes me a while to go through all the sections and find it).
