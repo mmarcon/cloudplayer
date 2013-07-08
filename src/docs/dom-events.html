@@ -101,41 +101,7 @@
               
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="comment">/*global define*/</span>
-define(<span class="keyword">function</span>(require) {
-    <span class="string">'use strict'</span>;
-
-    <span class="keyword">var</span> searchFormSubmitted,
-        trackEnqueueClicked,
-        sliderActivated,
-        playToggled,
-        playNext,
-        skip,
-        showMoreClicked,
-        reorderOrDeleteClicked;
-
-    <span class="keyword">var</span> Controller = require(<span class="string">'modules/controller'</span>),
-        Events = require(<span class="string">'modules/events'</span>),
-        Queue = require(<span class="string">'modules/queue'</span>),
-        Template = require(<span class="string">'modules/ui/template'</span>),
-        $ = require(<span class="string">'jquery'</span>),
-        dispatcher = Events.getDispatcher();
-
-    <span class="keyword">var</span> toggleplay = $(<span class="string">'.toggleplay'</span>),
-        playlist = $(<span class="string">'.playlist'</span>),
-        searchResultsList = $(<span class="string">'.search .results'</span>),
-        loader = $(<span class="string">'.loader'</span>);
-
-    <span class="function"><span class="keyword">function</span> <span class="title">bind</span><span class="params">()</span>{</span>
-        $(<span class="string">'.search form'</span>).on(<span class="string">'submit'</span>, searchFormSubmitted);
-        searchResultsList.on(<span class="string">'touchstart click'</span>, <span class="string">'.enqueue'</span>, trackEnqueueClicked);
-        $(<span class="string">'.slide-control'</span>).on(<span class="string">'touchstart click'</span>, sliderActivated);
-        playlist.on(<span class="string">'touchstart click'</span>, <span class="string">'.more a'</span>, showMoreClicked);
-        playlist.on(<span class="string">'touchstart click'</span>, <span class="string">'.move'</span>, reorderOrDeleteClicked);
-        toggleplay.on(<span class="string">'touchstart click'</span>, playToggled);
-        $(<span class="string">'.skip'</span>).on(<span class="string">'touchstart click'</span>, skip);
-        observe();
-    }</pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="comment">/*global define*/</span></pre></div></div>
             
         </li>
         
@@ -145,6 +111,82 @@ define(<span class="keyword">function</span>(require) {
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>This is the only module where the DOM is ever touched.
+While other modules provide more generic functionalities
+this module bridges what happens in the UI with the
+application logic.</p>
+<p>Calls to other components, e.g. <em>search</em>, <em>player</em>, are direct function
+calls via a unified, stateless module – called `<em>controller</em>. The inverse
+flow is done via events rather than via callback to keep the code cleaner
+and more mantainable.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>define(<span class="keyword">function</span>(require) {
+    <span class="string">'use strict'</span>;
+
+    <span class="keyword">var</span> searchFormSubmitted,
+        trackEnqueueClicked,
+        sliderActivated,
+        playToggled,
+        iosPlayToggled,
+        othersPlayToggled,
+        playNext,
+        skip,
+        showMoreClicked,
+        reorderOrDeleteClicked,
+
+        Controller = require(<span class="string">'modules/controller'</span>),
+        Events = require(<span class="string">'modules/events'</span>),
+        Queue = require(<span class="string">'modules/queue'</span>),
+        Template = require(<span class="string">'modules/ui/template'</span>),
+        $ = require(<span class="string">'jquery'</span>),
+        dispatcher = Events.getDispatcher(),
+
+        toggleplay = $(<span class="string">'.toggleplay'</span>),
+        playlist = $(<span class="string">'.playlist'</span>),
+        searchResultsList = $(<span class="string">'.search .results'</span>),
+        loader = $(<span class="string">'.loader'</span>),
+        body = $(<span class="string">'body'</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Module entrypoint. Binds DOM event listeners
+and starts the event observers.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="function"><span class="keyword">function</span> <span class="title">bind</span><span class="params">()</span>{</span>
+        listen();
+        observe();
+    }
+
+    <span class="function"><span class="keyword">function</span> <span class="title">listen</span><span class="params">()</span>{</span>
+        $(<span class="string">'.search form'</span>).on(<span class="string">'submit'</span>, searchFormSubmitted);
+        searchResultsList.on(<span class="string">'touchstart click'</span>, <span class="string">'.enqueue'</span>, trackEnqueueClicked);
+        $(<span class="string">'.slide-control'</span>).on(<span class="string">'touchstart click'</span>, sliderActivated);
+        playlist.on(<span class="string">'touchstart click'</span>, <span class="string">'.more a'</span>, showMoreClicked);
+        playlist.on(<span class="string">'touchstart click'</span>, <span class="string">'.move'</span>, reorderOrDeleteClicked);
+        toggleplay.on(<span class="string">'touchstart click'</span>, playToggled);
+        $(<span class="string">'.skip'</span>).on(<span class="string">'touchstart click'</span>, skip);
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
               </div>
               <p><code>play</code> unfortunately does nothing on Mobile Safari
 when launched in non-standalone mode, unless it is
@@ -159,7 +201,6 @@ It returns <code>false</code> otherwise.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>    <span class="function"><span class="keyword">function</span> <span class="title">canPlay</span><span class="params">()</span>{</span>
-        <span class="keyword">var</span> body = $(<span class="string">'body'</span>);
         <span class="keyword">if</span>(body.hasClass(<span class="string">'ios'</span>) &amp;&amp; !body.hasClass(<span class="string">'standalone'</span>)) {
             <span class="keyword">return</span> <span class="literal">false</span>;
         }
@@ -171,11 +212,11 @@ It returns <code>false</code> otherwise.</p>
         </li>
         
         
-        <li id="section-3">
+        <li id="section-5">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-3">&#182;</a>
+                <a class="pilcrow" href="#section-5">&#182;</a>
               </div>
               <p>Let&#39;s just handle everything JS side</p>
 
@@ -190,11 +231,11 @@ It returns <code>false</code> otherwise.</p>
         </li>
         
         
-        <li id="section-4">
+        <li id="section-6">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-4">&#182;</a>
+                <a class="pilcrow" href="#section-6">&#182;</a>
               </div>
               <p>Should hide the keyboard on iOS</p>
 
@@ -205,11 +246,11 @@ It returns <code>false</code> otherwise.</p>
         </li>
         
         
-        <li id="section-5">
+        <li id="section-7">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-5">&#182;</a>
+                <a class="pilcrow" href="#section-7">&#182;</a>
               </div>
               <p>Basic query validation</p>
 
@@ -219,101 +260,7 @@ It returns <code>false</code> otherwise.</p>
         <span class="keyword">if</span>(searchTerms &amp;&amp; searchTerms.length &gt; <span class="number">1</span>) {
             Controller.search(searchTerms);
         }
-    };
-
-    trackEnqueueClicked = <span class="keyword">function</span>(e) {
-        e.preventDefault();
-        <span class="keyword">var</span> target = $(<span class="keyword">this</span>);
-        <span class="keyword">if</span>(target.hasClass(<span class="string">'disabled'</span>)) {
-            <span class="keyword">return</span>;
-        }
-        target.addClass(<span class="string">'disabled'</span>);
-        target.parent().addClass(<span class="string">'selected'</span>);
-        Queue.enqueue(target.parent().data(<span class="string">'track'</span>));
-        <span class="keyword">return</span> <span class="literal">false</span>;
-    };
-
-    sliderActivated = <span class="keyword">function</span>(e) {
-        e.preventDefault();
-        $(<span class="string">'.slider'</span>).toggleClass(<span class="string">'slide'</span>);
-        <span class="keyword">return</span> <span class="literal">false</span>;
-    };
-
-    showMoreClicked = <span class="keyword">function</span>(e) {
-        e.preventDefault();
-        $(<span class="keyword">this</span>).parents(<span class="string">'.item'</span>).toggleClass(<span class="string">'translated'</span>);
-        <span class="keyword">return</span> <span class="literal">false</span>;
     };</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-6">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-6">&#182;</a>
-              </div>
-              <p>The logic of this method is a little contorted.
-If the control is a <em>pause</em> control then we should definitely pause.
-If the control is a <em>play</em> control then it could be either <em>play</em> or <em>resume</em>.
-In this last case the handler tries to resume via the <code>Controller</code>. If resume
-fails that means nothing was playing and it is therefore an actual play.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>    playToggled = <span class="keyword">function</span>(e) {
-        e.preventDefault();
-        <span class="keyword">var</span> target = $(<span class="keyword">this</span>);
-        <span class="keyword">if</span>(target.hasClass(<span class="string">'pause'</span>)) {
-            Controller.pause();
-        } <span class="keyword">else</span> <span class="keyword">if</span>(target.hasClass(<span class="string">'play'</span>)) {
-            <span class="keyword">if</span>(!Controller.resume()) {
-                playNext();
-            }
-        }
-        <span class="keyword">return</span> <span class="literal">false</span>;
-    };
-
-    playNext = <span class="keyword">function</span>() {
-        loader.show();
-        <span class="keyword">var</span> track = Queue.get(<span class="number">0</span>);
-        <span class="keyword">if</span>(track) {
-            Controller.prepare(track.id);
-            console.log(track);
-        } <span class="keyword">else</span> {</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-7">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-7">&#182;</a>
-              </div>
-              <p>No more tracks in queue. Bring UI back to
-initial state.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>            toggleplay.removeClass(<span class="string">'pause'</span>).addClass(<span class="string">'play'</span>);
-        }
-        <span class="keyword">return</span> <span class="literal">false</span>;
-    };
-
-    skip = <span class="keyword">function</span>(e) {
-        e.preventDefault();
-        Controller.stop();
-        $(<span class="string">'.player .playlist li'</span>).first().remove();
-        Queue.shift();
-        playNext();
-        <span class="keyword">return</span> <span class="literal">false</span>;
-    };
-
-    reorderOrDeleteClicked = <span class="keyword">function</span>(e) {
-        e.preventDefault();
-        <span class="keyword">var</span> target = $(<span class="keyword">this</span>), track = target.parents(<span class="string">'li'</span>).eq(<span class="number">0</span>), sourceIndex, destinationIndex;</pre></div></div>
             
         </li>
         
@@ -323,6 +270,261 @@ initial state.</p>
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>When users touch/click the <code>+</code> button on tracks
+that are in the search results list this handler
+enqueues them and disables the control under the
+assumption that duplicate tracks aren&#39;t allowed.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    trackEnqueueClicked = <span class="keyword">function</span>(e) {
+        e.preventDefault();
+        <span class="keyword">var</span> target = $(<span class="keyword">this</span>);
+        <span class="keyword">if</span>(target.hasClass(<span class="string">'disabled'</span>)) {
+            <span class="keyword">return</span>;
+        }
+        target.addClass(<span class="string">'disabled'</span>);
+        target.parent().addClass(<span class="string">'selected'</span>);
+        Queue.enqueue(target.parent().data(<span class="string">'track'</span>));
+        <span class="keyword">return</span> <span class="literal">false</span>;
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>Handles toggling between player and search.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    sliderActivated = <span class="keyword">function</span>(e) {
+        e.preventDefault();
+        $(<span class="string">'.slider'</span>).toggleClass(<span class="string">'slide'</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>When iOS non standalone preload
+when going from search to player</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="keyword">if</span>(!canPlay()){
+            playNext();
+        }
+        <span class="keyword">return</span> <span class="literal">false</span>;
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>Tracks contenxtual menu in playlist (for deleting and reordering tracks)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    showMoreClicked = <span class="keyword">function</span>(e) {
+        e.preventDefault();
+        $(<span class="keyword">this</span>).parents(<span class="string">'.item'</span>).toggleClass(<span class="string">'translated'</span>);
+        <span class="keyword">return</span> <span class="literal">false</span>;
+    };
+
+    playToggled = <span class="keyword">function</span>(e) {
+        e.preventDefault();
+        <span class="keyword">if</span>(canPlay()) {
+            othersPlayToggled.call(<span class="keyword">this</span>, e);
+        } <span class="keyword">else</span> {
+            iosPlayToggled.call(<span class="keyword">this</span>, e);
+        }
+        <span class="keyword">return</span> <span class="literal">false</span>;
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>This function handles events on the special toggle play
+used for iOS where tracks can&#39;t be played continuosly when
+browser is in non-standalone mode.</p>
+<p>It seems much cleaner to separate event handlers rather than having a bunch of if
+contitions on the same one.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    iosPlayToggled = <span class="keyword">function</span>(e) {
+        <span class="keyword">var</span> target = $(<span class="keyword">this</span>);
+        <span class="keyword">if</span>(target.hasClass(<span class="string">'preparing'</span>)) {
+            <span class="keyword">return</span>;
+        }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p>For Mobile safari this handler <strong>assumes
+the first track in the queue has been preloaded already</strong>.</p>
+<p>Every time a tracks finishes playing it is preloaded
+down in the <code>TRACK_FINISHED</code> event handler.</p>
+<p>Before any track is played, every time the UI changes state the
+first track in the list is preloaded.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="keyword">if</span>(target.hasClass(<span class="string">'pause'</span>)) {
+            Controller.pause();
+        } <span class="keyword">else</span> <span class="keyword">if</span>(target.hasClass(<span class="string">'play'</span>)) {
+            <span class="keyword">if</span>(!Controller.resume()) {
+                $(<span class="string">'.playlist li'</span>).first().addClass(<span class="string">'disabled'</span>);
+                Controller.play();
+            }
+        }
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <p>This instead handles play on all other browsers
+The logic of this method is a little contorted.
+If the control is a <em>pause</em> control then we should definitely pause.
+If the control is a <em>play</em> control then it could be either <em>play</em> or <em>resume</em>.
+In this last case the handler tries to resume via the <code>Controller</code>. If resume
+fails that means nothing was playing and it is therefore an actual play.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    othersPlayToggled = <span class="keyword">function</span>(e) {
+        <span class="keyword">var</span> target = $(<span class="keyword">this</span>);
+        <span class="keyword">if</span>(target.hasClass(<span class="string">'pause'</span>)) {
+            Controller.pause();
+        } <span class="keyword">else</span> <span class="keyword">if</span>(target.hasClass(<span class="string">'play'</span>)) {
+            <span class="keyword">if</span>(!Controller.resume()) {
+                playNext();
+            }
+        }
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <p>Prepare next track in queue to be played</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    playNext = <span class="keyword">function</span>() {
+        <span class="keyword">var</span> track = Queue.get(<span class="number">0</span>);
+        <span class="keyword">if</span>(track) {
+            loader.show();
+            toggleplay.addClass(<span class="string">'preparing'</span>);
+            Controller.prepare(track.id);
+        } <span class="keyword">else</span> {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <p>No more tracks in queue. Bring UI back to
+initial state.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            toggleplay.removeClass(<span class="string">'pause'</span>).addClass(<span class="string">'play'</span>);
+            playlist.removeClass(<span class="string">'playing'</span>);
+        }
+        <span class="keyword">return</span> <span class="literal">false</span>;
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-17">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-17">&#182;</a>
+              </div>
+              <p>Skip track that is currently playing.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    skip = <span class="keyword">function</span>(e) {
+        e.preventDefault();
+        Controller.stop();
+        $(<span class="string">'.player .playlist li'</span>).first().remove();
+        toggleplay.removeClass(<span class="string">'pause'</span>).addClass(<span class="string">'play'</span>);
+        Queue.shift();
+        playNext();
+        <span class="keyword">return</span> <span class="literal">false</span>;
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-18">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-18">&#182;</a>
+              </div>
+              <p>Support for track reordering or deleting from the playlist</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    reorderOrDeleteClicked = <span class="keyword">function</span>(e) {
+        e.preventDefault();
+        <span class="keyword">var</span> target = $(<span class="keyword">this</span>), track = target.parents(<span class="string">'li'</span>).eq(<span class="number">0</span>), sourceIndex, destinationIndex;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-19">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-19">&#182;</a>
               </div>
               <p>Sometimes controls can be disabled
 e.g. playing track can&#39;t be modified.</p>
@@ -336,11 +538,11 @@ e.g. playing track can&#39;t be modified.</p>
         </li>
         
         
-        <li id="section-9">
+        <li id="section-20">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-9">&#182;</a>
+                <a class="pilcrow" href="#section-20">&#182;</a>
               </div>
               <p>Determine the index of the item in the dom that has to be moved</p>
 
@@ -352,11 +554,11 @@ e.g. playing track can&#39;t be modified.</p>
         </li>
         
         
-        <li id="section-10">
+        <li id="section-21">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-10">&#182;</a>
+                <a class="pilcrow" href="#section-21">&#182;</a>
               </div>
               <p>Delete item from queue</p>
 
@@ -368,23 +570,42 @@ e.g. playing track can&#39;t be modified.</p>
         <span class="keyword">if</span>(destinationIndex !== <span class="literal">false</span>) {
             Queue.swap(sourceIndex, destinationIndex);
         }
+        <span class="keyword">if</span>(!canPlay()){
+            playNext();
+        }
         <span class="keyword">return</span> <span class="literal">false</span>;
-    };
-
-    <span class="function"><span class="keyword">function</span> <span class="title">getDestinationIndex</span><span class="params">(target, sourceIndex)</span> {</span>
-        <span class="keyword">if</span> (target.hasClass(<span class="string">'up'</span>)) {
-            <span class="keyword">if</span>(sourceIndex === <span class="number">0</span>) {</pre></div></div>
+    };</pre></div></div>
             
         </li>
         
         
-        <li id="section-11">
+        <li id="section-22">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-11">&#182;</a>
+                <a class="pilcrow" href="#section-22">&#182;</a>
               </div>
-              <p>First in queue, can&#39;t be moved up</p>
+              <p>When a track is reordered determine where it should go</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="function"><span class="keyword">function</span> <span class="title">getDestinationIndex</span><span class="params">(target, sourceIndex)</span> {</span>
+        <span class="keyword">if</span> (target.hasClass(<span class="string">'up'</span>)) {
+            <span class="keyword">if</span>(sourceIndex === <span class="number">0</span> ||
+                (sourceIndex === <span class="number">1</span> &amp;&amp; $(<span class="string">'.player .playlist li'</span>).first().hasClass(<span class="string">'disabled'</span>))) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-23">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-23">&#182;</a>
+              </div>
+              <p>First in queue or second item in queue
+with the first one already playing:
+can&#39;t be moved up</p>
 
             </div>
             
@@ -397,11 +618,11 @@ e.g. playing track can&#39;t be modified.</p>
         </li>
         
         
-        <li id="section-12">
+        <li id="section-24">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-12">&#182;</a>
+                <a class="pilcrow" href="#section-24">&#182;</a>
               </div>
               <p>Last in queue, can&#39;t be moved down</p>
 
@@ -411,9 +632,22 @@ e.g. playing track can&#39;t be modified.</p>
             }
             <span class="keyword">return</span> sourceIndex + <span class="number">1</span>;
         }
-    }
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-25">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-25">&#182;</a>
+              </div>
+              <p>Internal event handling</p>
 
-    <span class="function"><span class="keyword">function</span> <span class="title">observe</span><span class="params">()</span>{</span>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="function"><span class="keyword">function</span> <span class="title">observe</span><span class="params">()</span>{</span>
         dispatcher.on(Events.SEARCH_RESULTS, <span class="keyword">function</span>(results){
             searchResultsList.empty();
 
@@ -426,11 +660,11 @@ e.g. playing track can&#39;t be modified.</p>
         </li>
         
         
-        <li id="section-13">
+        <li id="section-26">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-13">&#182;</a>
+                <a class="pilcrow" href="#section-26">&#182;</a>
               </div>
               <p>If the track does not have an artwork then use default image</p>
 
@@ -442,11 +676,11 @@ e.g. playing track can&#39;t be modified.</p>
         </li>
         
         
-        <li id="section-14">
+        <li id="section-27">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-14">&#182;</a>
+                <a class="pilcrow" href="#section-27">&#182;</a>
               </div>
               <p>Attach the original search result to the DOM node
 so we can easy retrieve it when it is time to enqueue
@@ -460,11 +694,13 @@ this track</p>
             });
             loader.hide();
         });
+
         dispatcher.on(Events.SEARCH_TRACKINFO, <span class="keyword">function</span>(track){
             track.artwork_url = track.artwork_url || <span class="string">'img/default-artwork.png'</span>;
             track.sec_artwork_url = track.artwork_url.replace(<span class="string">'http://'</span>, <span class="string">'https://'</span>);
             Queue.enqueue(track);
         });
+
         dispatcher.on(Events.QUEUE_CHANGED, <span class="keyword">function</span>(queue){
             <span class="keyword">var</span> playlist = $(<span class="string">'.playlist'</span>);
             playlist.empty();
@@ -477,11 +713,11 @@ this track</p>
         </li>
         
         
-        <li id="section-15">
+        <li id="section-28">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-15">&#182;</a>
+                <a class="pilcrow" href="#section-28">&#182;</a>
               </div>
               <p>Attach the original item to the DOM node
 so we can easy retrieve it when it is time to enqueue
@@ -494,6 +730,7 @@ this track</p>
                 playlist.append(li);
             });
         });
+
         dispatcher.on(Events.QUEUE_ITEM_REMOVED, <span class="keyword">function</span>(index){
             <span class="keyword">var</span> item = $(<span class="string">'.playlist li'</span>).eq(index);
             item.addClass(<span class="string">'fade'</span>);</pre></div></div>
@@ -501,11 +738,11 @@ this track</p>
         </li>
         
         
-        <li id="section-16">
+        <li id="section-29">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-16">&#182;</a>
+                <a class="pilcrow" href="#section-29">&#182;</a>
               </div>
               <p>Get rid of the list item once the CSS transition is completed.
 A nicer way would be to listen for <code>transitionend</code>, however
@@ -528,22 +765,46 @@ that has proven to work inconsistently across browsers.</p>
             item1.replaceWith(clone0);
             item0.replaceWith(clone1);
         });
-        dispatcher.on(Events.TRACK_READY, <span class="keyword">function</span>(){
-            $(<span class="string">'.playlist li'</span>).first().addClass(<span class="string">'disabled'</span>);
-            Controller.play();
+
+        dispatcher.on(Events.TRACK_READY, <span class="keyword">function</span>(){</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-30">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-30">&#182;</a>
+              </div>
+              <p>Only play if the browser is capable of playing</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="keyword">if</span>(canPlay()) {
+                $(<span class="string">'.playlist li'</span>).first().addClass(<span class="string">'disabled'</span>);
+                Controller.play();
+            }
+            toggleplay.removeClass(<span class="string">'preparing'</span>);
+            loader.hide();
         });
+
         dispatcher.on(Events.TRACK_FINISHED, <span class="keyword">function</span>(){
             $(<span class="string">'.playlist li'</span>).first().remove();
+            toggleplay.removeClass(<span class="string">'pause'</span>).addClass(<span class="string">'play'</span>);
             Queue.shift();
             playNext();
         });
+
         dispatcher.on(Events.TRACK_PLAYING, <span class="keyword">function</span>(){
             toggleplay.addClass(<span class="string">'pause'</span>).removeClass(<span class="string">'play'</span>);
-            loader.hide();
+            playlist.addClass(<span class="string">'playing'</span>);
         });
+
         dispatcher.on(Events.TRACK_PAUSED, <span class="keyword">function</span>(){
             toggleplay.removeClass(<span class="string">'pause'</span>).addClass(<span class="string">'play'</span>);
         });
+
         dispatcher.on(Events.DROPBOX_LOADED, <span class="keyword">function</span>(dropbox){
             dropbox.forEach(<span class="keyword">function</span>(trackId){
                 Controller.loadTrackInfo(trackId);

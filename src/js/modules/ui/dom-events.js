@@ -1,4 +1,13 @@
 /*global define*/
+//This is the only module where the DOM is ever touched.
+//While other modules provide more generic functionalities
+//this module bridges what happens in the UI with the
+//application logic.
+//
+//Calls to other components, e.g. *search*, *player*, are direct function
+//calls via a unified, stateless module – called `*controller*. The inverse
+//flow is done via events rather than via callback to keep the code cleaner
+//and more mantainable.
 define(function(require) {
     'use strict';
 
@@ -11,22 +20,30 @@ define(function(require) {
         playNext,
         skip,
         showMoreClicked,
-        reorderOrDeleteClicked;
+        reorderOrDeleteClicked,
 
-    var Controller = require('modules/controller'),
+        Controller = require('modules/controller'),
         Events = require('modules/events'),
         Queue = require('modules/queue'),
         Template = require('modules/ui/template'),
         $ = require('jquery'),
-        dispatcher = Events.getDispatcher();
+        dispatcher = Events.getDispatcher(),
 
-    var toggleplay = $('.toggleplay'),
+        toggleplay = $('.toggleplay'),
         playlist = $('.playlist'),
         searchResultsList = $('.search .results'),
         loader = $('.loader'),
         body = $('body');
 
+
+    //Module entrypoint. Binds DOM event listeners
+    //and starts the event observers.
     function bind(){
+        listen();
+        observe();
+    }
+
+    function listen(){
         $('.search form').on('submit', searchFormSubmitted);
         searchResultsList.on('touchstart click', '.enqueue', trackEnqueueClicked);
         $('.slide-control').on('touchstart click', sliderActivated);
@@ -34,7 +51,6 @@ define(function(require) {
         playlist.on('touchstart click', '.move', reorderOrDeleteClicked);
         toggleplay.on('touchstart click', playToggled);
         $('.skip').on('touchstart click', skip);
-        observe();
     }
 
     //`play` unfortunately does nothing on Mobile Safari
@@ -71,6 +87,10 @@ define(function(require) {
         }
     };
 
+    //When users touch/click the `+` button on tracks
+    //that are in the search results list this handler
+    //enqueues them and disables the control under the
+    //assumption that duplicate tracks aren't allowed.
     trackEnqueueClicked = function(e) {
         e.preventDefault();
         var target = $(this);
@@ -83,26 +103,25 @@ define(function(require) {
         return false;
     };
 
+    //Handles toggling between player and search.
     sliderActivated = function(e) {
         e.preventDefault();
         $('.slider').toggleClass('slide');
+        //When iOS non standalone preload
+        //when going from search to player
         if(!canPlay()){
             playNext();
         }
         return false;
     };
 
+    //Tracks contenxtual menu in playlist (for deleting and reordering tracks)
     showMoreClicked = function(e) {
         e.preventDefault();
         $(this).parents('.item').toggleClass('translated');
         return false;
     };
 
-    //The logic of this method is a little contorted.
-    //If the control is a *pause* control then we should definitely pause.
-    //If the control is a *play* control then it could be either *play* or *resume*.
-    //In this last case the handler tries to resume via the `Controller`. If resume
-    //fails that means nothing was playing and it is therefore an actual play.
     playToggled = function(e) {
         e.preventDefault();
         if(canPlay()) {
@@ -136,12 +155,18 @@ define(function(require) {
             Controller.pause();
         } else if(target.hasClass('play')) {
             if(!Controller.resume()) {
+                $('.playlist li').first().addClass('disabled');
                 Controller.play();
             }
         }
     };
 
     //This instead handles play on all other browsers
+    //The logic of this method is a little contorted.
+    //If the control is a *pause* control then we should definitely pause.
+    //If the control is a *play* control then it could be either *play* or *resume*.
+    //In this last case the handler tries to resume via the `Controller`. If resume
+    //fails that means nothing was playing and it is therefore an actual play.
     othersPlayToggled = function(e) {
         var target = $(this);
         if(target.hasClass('pause')) {
@@ -153,13 +178,13 @@ define(function(require) {
         }
     };
 
+    //Prepare next track in queue to be played
     playNext = function() {
         var track = Queue.get(0);
         if(track) {
             loader.show();
             toggleplay.addClass('preparing');
             Controller.prepare(track.id);
-            console.log(track);
         } else {
             //No more tracks in queue. Bring UI back to
             //initial state.
@@ -169,6 +194,7 @@ define(function(require) {
         return false;
     };
 
+    //Skip track that is currently playing.
     skip = function(e) {
         e.preventDefault();
         Controller.stop();
@@ -179,6 +205,7 @@ define(function(require) {
         return false;
     };
 
+    //Support for track reordering or deleting from the playlist
     reorderOrDeleteClicked = function(e) {
         e.preventDefault();
         var target = $(this), track = target.parents('li').eq(0), sourceIndex, destinationIndex;
@@ -203,6 +230,7 @@ define(function(require) {
         return false;
     };
 
+    //When a track is reordered determine where it should go
     function getDestinationIndex(target, sourceIndex) {
         if (target.hasClass('up')) {
             if(sourceIndex === 0 ||
@@ -222,6 +250,7 @@ define(function(require) {
         }
     }
 
+    //Internal event handling
     function observe(){
         dispatcher.on(Events.SEARCH_RESULTS, function(results){
             searchResultsList.empty();
@@ -243,11 +272,13 @@ define(function(require) {
             });
             loader.hide();
         });
+
         dispatcher.on(Events.SEARCH_TRACKINFO, function(track){
             track.artwork_url = track.artwork_url || 'img/default-artwork.png';
             track.sec_artwork_url = track.artwork_url.replace('http://', 'https://');
             Queue.enqueue(track);
         });
+
         dispatcher.on(Events.QUEUE_CHANGED, function(queue){
             var playlist = $('.playlist');
             playlist.empty();
@@ -264,6 +295,7 @@ define(function(require) {
                 playlist.append(li);
             });
         });
+
         dispatcher.on(Events.QUEUE_ITEM_REMOVED, function(index){
             var item = $('.playlist li').eq(index);
             item.addClass('fade');
@@ -285,29 +317,33 @@ define(function(require) {
             item1.replaceWith(clone0);
             item0.replaceWith(clone1);
         });
+
         dispatcher.on(Events.TRACK_READY, function(){
             //Only play if the browser is capable of playing
             if(canPlay()) {
                 $('.playlist li').first().addClass('disabled');
                 Controller.play();
             }
-            console.log('HEREj');
             toggleplay.removeClass('preparing');
             loader.hide();
         });
+
         dispatcher.on(Events.TRACK_FINISHED, function(){
             $('.playlist li').first().remove();
             toggleplay.removeClass('pause').addClass('play');
             Queue.shift();
             playNext();
         });
+
         dispatcher.on(Events.TRACK_PLAYING, function(){
             toggleplay.addClass('pause').removeClass('play');
             playlist.addClass('playing');
         });
+
         dispatcher.on(Events.TRACK_PAUSED, function(){
             toggleplay.removeClass('pause').addClass('play');
         });
+
         dispatcher.on(Events.DROPBOX_LOADED, function(dropbox){
             dropbox.forEach(function(trackId){
                 Controller.loadTrackInfo(trackId);

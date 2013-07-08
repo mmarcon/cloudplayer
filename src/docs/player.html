@@ -163,14 +163,15 @@ At this point the track can be played with <code>play</code>.</p>
     };
 
     P.play = <span class="keyword">function</span>() {
-        <span class="keyword">if</span>(<span class="keyword">this</span>.currentTrack) {
-            <span class="keyword">this</span>.currentTrack.play({
+        <span class="keyword">var</span> self = <span class="keyword">this</span>;
+        <span class="keyword">if</span>(self.currentTrack) {
+            self.currentTrack.play({
                 onfinish: <span class="keyword">function</span>(){
-                    console.log(<span class="string">'onfinish'</span>);
+                    self.playing = <span class="literal">false</span>;
                     eventDispatcher.trigger(Events.TRACK_FINISHED);
                 }
             });
-            <span class="keyword">this</span>.playing = <span class="literal">true</span>;
+            self.playing = <span class="literal">true</span>;
             eventDispatcher.trigger(Events.TRACK_PLAYING);
         }
     };

@@ -25,7 +25,7 @@ Once tracks are in the playlist they are ready to be played. Users can also reor
 
 ## Tech stuff
 
-Cloudplayer is built entirely in JavaScript. I chose not to use any MVC-kind-of frameworks beacuse it seemed unnecessary for such a simple application.
+Cloudplayer is built entirely in JavaScript. I chose not to use any MVC-kind-of frameworks beacuse it seemed an overkill for such a simple application.
 
 jQuery was used for DOM manipulation, and in the attempt of keeping the code as clean as possible all the DOM-related code was kept in the same module. I decided to use **require.js** to modularize my code, and the related **r.js** to optimize the code and build the final distribution of Cloudplayer.
 
@@ -45,7 +45,9 @@ Cloudplayer has to work in modern browsers, and **when possible(*)** do continuo
 		sound.play();
 	});
 	
-will not work. **Unless the application is started in standalone mode, i.e. from the Home Screen**. Therefore Cloudplayer detects when it is being run on mobile Safari in non-standalone mode and suggests the application is added to the home screen for a better experience.
+will not work **unless the application is started in standalone mode, i.e. from the Home Screen**. Therefore Cloudplayer detects when it is being run on mobile Safari in non-standalone mode and suggests the application is added to the home screen for a better experience.
+
+![Bookmarklet](https://raw.github.com/mmarcon/cloudplayer/master/screenshots/mobilesafari)
 
 ## Cloudplayer bookmarklet
 
