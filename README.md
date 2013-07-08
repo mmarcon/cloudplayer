@@ -47,7 +47,7 @@ Cloudplayer has to work in modern browsers, and **when possible(*)** do continuo
 	
 will not work **unless the application is started in standalone mode, i.e. from the Home Screen**. Therefore Cloudplayer detects when it is being run on mobile Safari in non-standalone mode and suggests the application is added to the home screen for a better experience.
 
-![Bookmarklet](https://raw.github.com/mmarcon/cloudplayer/master/screenshots/mobilesafari)
+![Add to home screen](https://raw.github.com/mmarcon/cloudplayer/master/screenshots/mobilesafari.png)
 
 ## Cloudplayer bookmarklet
 
