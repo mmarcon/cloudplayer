@@ -139,7 +139,7 @@ define(function(require) {
         var target = $(this), track = target.parents('li').eq(0), sourceIndex, destinationIndex;
         //Sometimes controls can be disabled
         //e.g. playing track can't be modified.
-        if(target.hasClass('disabled')) {
+        if(track.hasClass('disabled')) {
             return false;
         }
         //Determine the index of the item in the dom that has to be moved
@@ -235,6 +235,7 @@ define(function(require) {
             item0.replaceWith(clone1);
         });
         dispatcher.on(Events.TRACK_READY, function(){
+            $('.playlist li').first().addClass('disabled');
             Controller.play();
         });
         dispatcher.on(Events.TRACK_FINISHED, function(){

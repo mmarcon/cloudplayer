@@ -68,4 +68,18 @@ this command generates the documentation for all the JS files, optimizes and min
  * [Cloudplayer](https://cpl.eu01.aws.af.cm)
  * [Documentation](https://cpl.eu01.aws.af.cm/docs.html)
  * [Tests](https://cpl.eu01.aws.af.cm/tests)
+ 
+## Feedback on Soundcloud API
+ 
+Easy to use, although documentation could be a bit easier to use, sometimes things are hard to find (e.g. I can never find *Search*, it takes me a while to go through all the sections and find it).
+
+One minor issue is that even though framework is loaded from `HTTPS` (`https://connect.soundcloud.com/sdk`) and the current page is `HTTPS` resources are still loaded using `HTTP`, for example:
+
+ * Search: `http://api.soundcloud.com/tracks?q=monkey&client_id=9cedb0d36189d0ab5a0c5f0e66e03a06&format=json&_status_code_map[302]=200`
+ * Stream: `http://api.soundcloud.com/tracks/43676503/stream? client_id=9cedb0d36189d0ab5a0c5f0e66e03a06`
+ * MP3: `http://ec-media.soundcloud.com/byHT6TmkDGkp.128.mp3?ff61182e3c2ecefa438cd02…IAZE5EOI7PA7VQ&Expires=1373261334&Signature=KGoZrk3rv6slN3RjLNa0LUru6jI%3D`
+ 
+This makes browsers complain because non-secure resources are loaded from a secure page:
+
+The page at `https://cpl.eu01.aws.af.cm/` displayed insecure content from `http://api.soundcloud.com/tracks?q=beer&client_id=9cedb0d36189d0ab5a0c5f0e66e03a06&format=json&_status_code_map[302]=200`.
 

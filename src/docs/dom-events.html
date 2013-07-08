@@ -329,7 +329,7 @@ e.g. playing track can&#39;t be modified.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>        <span class="keyword">if</span>(target.hasClass(<span class="string">'disabled'</span>)) {
+            <div class="content"><div class='highlight'><pre>        <span class="keyword">if</span>(track.hasClass(<span class="string">'disabled'</span>)) {
             <span class="keyword">return</span> <span class="literal">false</span>;
         }</pre></div></div>
             
@@ -529,6 +529,7 @@ that has proven to work inconsistently across browsers.</p>
             item0.replaceWith(clone1);
         });
         dispatcher.on(Events.TRACK_READY, <span class="keyword">function</span>(){
+            $(<span class="string">'.playlist li'</span>).first().addClass(<span class="string">'disabled'</span>);
             Controller.play();
         });
         dispatcher.on(Events.TRACK_FINISHED, <span class="keyword">function</span>(){

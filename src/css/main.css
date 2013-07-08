@@ -269,6 +269,14 @@ form {
     left: -1.1rem;
 }
 
+.playlist .disabled .item {
+    border-width: 4px;
+}
+
+.playlist .disabled .more {
+    display: none;
+}
+
 .more a {
     background-position: 0 -35.2rem;
     height: 4rem;
